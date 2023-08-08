@@ -2,3 +2,26 @@ plugins:
   mlm_daily_summary_enabled:
     default: true
     client: true
+  mail_daily_summary_at:
+    default: "" 
+    regex : "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+  mail_daily_summary_debug_mode: 
+    default: false
+    client: true
+  mail_daily_summary_add_unsubscribe_link:
+     default: true
+  # # mail_daily_summary_enabled_groups:  
+  #   client: true
+  #   type: group_list
+  #   list_type: compact
+  #   default: ""
+  #   allow_any: false
+  #   refresh: true
+  # mlm_daily_summary_disabled_groups:  
+  #   client: true
+  #   type: group_list
+  #   list_type: compact
+  #   default: ""
+  #   allow_any: false
+  #   refresh: true
+  

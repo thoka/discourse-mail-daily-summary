@@ -1,11 +1,15 @@
 en:
   site_settings:
     mlm_daily_summary_enabled: 'Allow users to receive a daily email when on mailing list mode.'
+    mail_daily_summary_at: 'What time should the summary be generated? (HH:MM)'
+    mail_daily_summary_debug_mode: 'Enable Debug Mode'
+    mail_daily_summary_add_unsubscribe_link: 'Add an unsubscribe link'
+
   user_notifications:
     mailing_list:
       why: "All activity on %{site_link} for %{date}"   
       subject_template: "[%{email_prefix}] Summary for %{date}"   
-      unsubscribe: "This summary is sent daily due to mailing list mode being enabled. To unsubscribe %{unsubscribe_link}."   
+      unsubscribe: "This summary is sent daily due to mail daily summary being enabled in your preferences. To unsubscribe %{unsubscribe_link}."   
       from: "%{site_name} summary"    
       new_topics: "New topics"    
       topic_updates: "Topic updates"    
