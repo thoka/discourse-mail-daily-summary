@@ -1,6 +1,6 @@
 de:
   js:
     mlm_daily_summary:
-      daily: "Sende mir eine tägliche Zusammenfassung."
-      preference_label: "Aktiviere die täglichen Zusammenfassungen"
+      daily: "Sende mir eine tägliche Zusammenfassung"
+      preference_label: "Aktiviere die täglichen Zusammenfassungenung."
       instructions: "Wenn du dies aktivierst, bekommst du eine tägliche Zusammenfassung von den Aktivitäten auf dieser Seite."
