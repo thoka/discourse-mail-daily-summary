@@ -1,6 +1,6 @@
 en:
   site_settings:
-    mlm_daily_summary_enabled: 'Allow users to receive a daily email when on mailing list mode.'
+    mail_daily_summary_enabled: 'Allow users to receive a daily email when on mailing list mode.'
     mail_daily_summary_at: 'What time should the summary be generated? (HH:MM)'
     mail_daily_summary_debug_mode: 'Enable Debug Mode'
     mail_daily_summary_add_unsubscribe_link: 'Add an unsubscribe link'

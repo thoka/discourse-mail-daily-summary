@@ -55,7 +55,7 @@ module DiscourseMailDailySummary
             from_alias: I18n.t('user_notifications.mailing_list.from', site_name: SiteSetting.title),
             subject: I18n.t('user_notifications.mailing_list.subject_template', email_prefix: @email_prefix, date: @date),
             mailing_list_mode: true,
-            add_unsubscribe_link: SiteSetting.mlm_daily_summary_add_unsubscribe_link,
+            add_unsubscribe_link: SiteSetting.mail_daily_summary_add_unsubscribe_link,
             unsubscribe_url: "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}",
           }
 

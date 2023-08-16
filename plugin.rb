@@ -7,7 +7,8 @@
 # this is a fork of Joe Buhlig's discourse-mlm-daily-summary with additional features
 # https://www.github.com/joebuhlig/discourse-mlm-daily-summary
 
-enabled_site_setting :mlm_daily_summary_enabled
+enabled_site_setting :mail_daily_summary_enabled
+
 DiscoursePluginRegistry.serialized_current_user_fields << "user_mlm_daily_summary_enabled"
 
 load File.expand_path('../lib/discourse_mail_daily_summary/engine.rb', __FILE__)

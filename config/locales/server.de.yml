@@ -1,6 +1,6 @@
 de:
   site_settings:
-    mlm_daily_summary_enabled: 'Erlaube Benutzern eine täglich Zusammenfassung zu empfangen.'
+    mail_daily_summary_enabled: 'Erlaube Benutzern eine täglich Zusammenfassung zu empfangen.'
     mail_daily_summary_at: 'Wann soll die Zusammenfassung versendet werden? (HH:MM)'
     mail_daily_summary_debug_mode: 'Debug Log aktivieren'
     mail_daily_summary_add_unsubscribe_link: 'Füge einen Link zum Abbestellen hinzu'

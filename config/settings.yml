@@ -1,5 +1,5 @@
 plugins:
-  mlm_daily_summary_enabled:
+  mail_daily_summary_enabled:
     default: true
     client: true
   mail_daily_summary_at:
