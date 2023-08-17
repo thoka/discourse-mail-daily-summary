@@ -19,7 +19,7 @@ module DiscourseMailDailySummary
 
           def debug(msg)
             if SiteSetting.mail_daily_summary_debug_mode 
-              Rails.logger.info("MDS: #{msg}")
+              Rails.logger.warn("MDS: #{msg}")
             end
           end
 
@@ -83,7 +83,7 @@ module DiscourseMailDailySummary
 
           def debug(msg)
             if SiteSetting.mail_daily_summary_debug_mode 
-              Rails.logger.info("MDS: #{msg}")
+              Rails.logger.warn("MDS: #{msg}")
             end
           end
 
