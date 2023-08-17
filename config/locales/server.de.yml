@@ -9,7 +9,7 @@ de:
 
   user_notifications:
     mailing_list:
-      why: "Alle Aktivitäten von %{site_link} vom %{date}"   
+      why: "Alle Aktivitäten in %{site_link} seit dem %{date}"   
       subject_template: "[%{email_prefix}] Zusammenfassung vom %{date}"   
       unsubscribe: "Zum deaktivieren dieser täglichen Übersicht klick hier: %{unsubscribe_link}."   
       from: "%{site_name} Zusammenfassung"    
