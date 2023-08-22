@@ -1,9 +1,11 @@
 en:
   site_settings:
-    mail_daily_summary_enabled: 'Allow users to receive a daily email when on mailing list mode.'
+    mail_daily_summary_enabled: 'Allow users to receive a daily summary.'
     mail_daily_summary_at: 'What time should the summary be generated? (HH:MM)'
     mail_daily_summary_debug_mode: 'Enable Debug Mode'
     mail_daily_summary_add_unsubscribe_link: 'Add an unsubscribe link'
+    mail_daily_summary_auto_enabled_groups: 'This groups will get summaryies, independent of individual settings'
+    mail_daily_summary_enabled_categories: 'If set, only topics inside these categories (including subcategories) will be included into the summary'
 
   user_notifications:
     mailing_list:

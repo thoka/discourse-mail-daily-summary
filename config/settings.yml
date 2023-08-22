@@ -10,18 +10,25 @@ plugins:
     client: true
   mail_daily_summary_add_unsubscribe_link:
      default: true
-  # # mail_daily_summary_enabled_groups:  
-  #   client: true
-  #   type: group_list
-  #   list_type: compact
-  #   default: ""
-  #   allow_any: false
-  #   refresh: true
-  # mlm_daily_summary_disabled_groups:  
-  #   client: true
-  #   type: group_list
-  #   list_type: compact
-  #   default: ""
-  #   allow_any: false
-  #   refresh: true
-  
+  mail_daily_summary_auto_enabled_groups:  
+     client: true
+     type: group_list
+     list_type: compact
+     default: ""
+     allow_any: false
+     refresh: true
+  # mail_daily_summary_disabled_groups:  
+  #    client: true
+  #    type: group_list
+  #    list_type: compact
+  #    default: ""
+  #    allow_any: false
+  #    refresh: true
+  mail_daily_summary_enabled_categories:
+     client: true
+     type: category_list
+     list_type: compact
+     default: ""
+     allow_any: false
+     refresh: true
+

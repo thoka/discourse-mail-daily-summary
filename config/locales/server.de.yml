@@ -4,8 +4,9 @@ de:
     mail_daily_summary_at: 'Wann soll die Zusammenfassung versendet werden? (HH:MM)'
     mail_daily_summary_debug_mode: 'Debug Log aktivieren'
     mail_daily_summary_add_unsubscribe_link: 'Füge einen Link zum Abbestellen hinzu'
-    # mail_daily_summary_enabled_groups: 'Gruppen die die tägliche Zusammenfassung erhalten sollen'
-    # mail_daily_summary_disabled_groups: 'Gruppen die die tägliche Zusammenfassung nicht erhalten sollen (überschreibt die Einstellung oben))' 
+    mail_daily_summary_auto_enabled_groups: 'Gruppen, die die tägliche Zusammenfassung unabhängig von eigenen Einstellungen erhalten sollen'
+    mail_daily_summary_enabled_categories: 'Falls gesetzt, werden nur Themen in diesen Kategorien (inclusive Unterkategorien), in der täglichen Zusammenfassung berücksichtigt'
+    mail_daily_summary_disabled_groups: 'Gruppen, die die tägliche Zusammenfassung nicht erhalten sollen (überschreibt die Einstellung oben)' 
 
   user_notifications:
     mailing_list:

@@ -1,4 +1,5 @@
 module DiscourseMailDailySummary
+
   class Engine < ::Rails::Engine
     isolate_namespace DiscourseMailDailySummary
 
@@ -25,7 +26,7 @@ module DiscourseMailDailySummary
 
           debug("mailing_list for #{user.id}/#{user.email} (opts: #{opts})")
 
-          prepend_view_path "plugins/discourse-mlm-daily-summary/app/views" ##TODO: change path when plugin name changes
+          prepend_view_path "plugins/discourse-mail-daily-summary/app/views"
 
           @since = opts[:since] || 1.day.ago
           @since_formatted = short_date(@since)
@@ -41,6 +42,10 @@ module DiscourseMailDailySummary
  
           unless user.staff?
             topics = topics.where("posts.post_type <> ?", Post.types[:whisper])
+          end
+
+          if DiscourseMailDailySummary.enabled_categories?
+             topics = topics.where(category_id: DiscourseMailDailySummary.enabled_categories_including_subcategories)
           end
 
           @new_topics = topics.where("topics.created_at > ?", @since).uniq
@@ -61,24 +66,12 @@ module DiscourseMailDailySummary
 
           apply_notification_styles(build_email(@user.email, opts))
         end
+
       end 
-
-      # require_dependency 'user_serializer'
-      # class ::UserSerializer
-      #   attributes :user_mlm_daily_summary_enabled
-
-      #   def user_mlm_daily_summary_enabled
-      #     if !object.custom_fields["user_mlm_daily_summary_enabled"]
-      #       object.custom_fields["user_mlm_daily_summary_enabled"] = false
-      #       object.save
-      #     end
-      #     object.custom_fields["user_mlm_daily_summary_enabled"]
-      #   end
-      # end
 
       module ::Jobs
         class EnqueueMailDailySummary < Jobs::Scheduled
-          @@interval = 1 # in minutes
+          @@interval = 2 # in minutes
           every @@interval.minute 
 
           def debug(msg)
@@ -110,13 +103,15 @@ module DiscourseMailDailySummary
 
           def execute(args)
 
-            last_run_at = DB.query_single(<<~SQL, klass: self.class.name)
-              SELECT started_at FROM scheduler_stats
-                 WHERE name = :klass AND success = true
-                 ORDER BY started_at DESC
-              LIMIT 1
-            SQL
-            debug("last run: #{last_run_at}")
+            if false
+              last_run_at = DB.query_single(<<~SQL, klass: self.class.name)
+                SELECT started_at FROM scheduler_stats
+                  WHERE name = :klass AND success = true
+                  ORDER BY started_at DESC
+                LIMIT 1
+              SQL
+              debug("last run: #{last_run_at}")
+            end
 
             compare_user_first_seen_hour = true
 
@@ -165,8 +160,10 @@ module DiscourseMailDailySummary
                 .where("COALESCE(first_seen_at, '2010-01-01') <= CURRENT_TIMESTAMP - '23 HOURS'::INTERVAL") # don't send unless you've been around for a day already
             
             users = users.where("date_part('hour', first_seen_at) = date_part('hour', CURRENT_TIMESTAMP)") if compare_hour  # where the hour of first_seen_at is the same as the current hour
+            users = users.pluck(:id)
 
-            users.pluck(:id)
+            users += DiscourseMailDailySummary.auto_enabled_users
+            users.uniq
           end
 
           def repair_problem_64661_33
@@ -182,4 +179,22 @@ module DiscourseMailDailySummary
       end
     end
   end
+
+  def self.enabled_categories
+    SiteSetting.mail_daily_summary_enabled_categories.split("|").map(&:to_i)
+  end
+
+  def self.enabled_categories?
+    enabled_categories.length > 0
+  end
+
+  def self.enabled_categories_including_subcategories
+    enabled_categories + Category.where(parent_category_id: enabled_categories).pluck(:id)
+  end
+
+  def self.auto_enabled_users
+    auto_enabled_groups = SiteSetting.mail_daily_summary_auto_enabled_groups_map
+    GroupUser.where(group_id: auto_enabled_groups).pluck(:user_id).uniq
+  end
+
 end
