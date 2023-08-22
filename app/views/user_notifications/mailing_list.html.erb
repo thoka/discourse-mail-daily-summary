@@ -1,8 +1,8 @@
 <div id="top"></div>
-<table style='width: 100%; border: 20px solid #eee;' cellspacing='0' cellpadding='0'>
+<table style='width: 100%; border: 20px solid #eee; background: #eee;' cellspacing='0' cellpadding='0'>
   <thead>
-    <td style='padding: 10px 10px; background-color: #<%= @header_bgcolor %>;'>
-      <a href='<%= Discourse.base_url %>' style='color: #<%= @anchor_color %>'>
+    <td style='padding: 10px 10px; background-color: #<%= @header_bgcolor %>; border-radius: 5px;'>
+      <a href='<%= Discourse.base_url %>' style='color: #<%= @anchor_color %>;'>
         <% if logo_url.blank? %>
           <%= SiteSetting.title %>
         <% else %>
@@ -18,18 +18,24 @@
   </thead>
   <tr>
     <td>
-      <h4 style="padding: 0 25px; margin: 10px 0;"><%= t('user_notifications.mailing_list.new_topics') %></h3>
+      <% if @new_topics.length > 0 %>
+      <h2 style="padding: 0 25px; margin: 10px 0;"><%= t('user_notifications.mailing_list.new_topics') %></h2>
       <ul>
         <% @new_topics.each do |topic| %>
           <%= mailing_list_topic(topic, topic.posts.length) %>
         <% end %>
       </ul>
-      <h4 style="padding: 0 25px; margin: 10px 0;"><%= t('user_notifications.mailing_list.topic_updates') %></h3>
+      <% end %>
+
+      <% if @existing_topics.length > 0 %>
+      <h2 style="padding: 0 25px; margin: 10px 0;"><%= t('user_notifications.mailing_list.topic_updates') %></h2>
       <ul>
         <% @existing_topics.each do |topic| %>
           <%= mailing_list_topic(topic, topic.posts.length) %>
         <% end %>
       </ul>
+      <% end %>
+
     </td>
   </tr>
 </table>
