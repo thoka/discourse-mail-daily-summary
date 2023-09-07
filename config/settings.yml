@@ -5,9 +5,10 @@ plugins:
   mail_daily_summary_at:
     default: "" 
     regex : "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+  mail_daily_summary_last_run_at:
+    default: "" 
   mail_daily_summary_debug_mode: 
     default: false
-    client: true
   mail_daily_summary_add_unsubscribe_link:
      default: true
   mail_daily_summary_auto_enabled_groups:  

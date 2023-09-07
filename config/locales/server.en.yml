@@ -2,15 +2,16 @@ en:
   site_settings:
     mail_daily_summary_enabled: 'Allow users to receive a daily summary.'
     mail_daily_summary_at: 'What time should the summary be generated? (HH:MM)'
+    mail_daily_summary_last_run_at: 'Timestamp of last run'
     mail_daily_summary_debug_mode: 'Enable Debug Mode'
     mail_daily_summary_add_unsubscribe_link: 'Add an unsubscribe link'
     mail_daily_summary_auto_enabled_groups: 'This groups will get summaryies, independent of individual settings'
     mail_daily_summary_enabled_categories: 'If set, only topics inside these categories (including subcategories) will be included into the summary'
 
   user_notifications:
-    mailing_list:
-      why: "All activity on %{site_link} for %{date}"   
-      subject_template: "[%{email_prefix}] Summary for %{date}"   
+    daily_summary:
+      why: "Activity on %{site_link} since %{date}"   
+      subject_template: "[%{email_prefix}] Daily update for %{date}"   
       unsubscribe: "This summary is sent daily due to mail daily summary being enabled in your preferences. To unsubscribe %{unsubscribe_link}."   
       from: "%{site_name} summary"    
       new_topics: "New topics"    

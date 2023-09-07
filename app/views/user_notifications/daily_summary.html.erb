@@ -1,0 +1,88 @@
+<div class="daily-summary">
+  <table class="daily-summary-header">
+    <thead>
+      <tr>
+        <td class="digest-header">
+          <a href="<%= Discourse.base_url %>">
+            <%- if logo_url.blank? %>
+              <%= SiteSetting.title %>
+            <%- else %>
+              <img src="<%= logo_url %>" height="40"
+                style="max-height:40px;min-height:40px;height:40px"
+                alt="<%= SiteSetting.title %>">
+            <%- end %>
+          </a>
+          <br />
+          <div style='padding-top: 10px;'>
+            <%= raw(t 'user_notifications.daily_summary.why' , site_link: html_site_link, date: @since_formatted) %>
+          </div>
+          <hr>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="daily-summary-topic-list">
+          <% if @new_topics.length> 0 %>
+            <h2>
+              <%= t('user_notifications.daily_summary.new_topics') %>
+            </h2>
+            <ul>
+              <% @new_topics.each do |topic| %>
+                <%= mailing_list_topic(topic, topic.posts.length) %>
+              <% end %>
+            </ul>
+          <% end %>
+          <% if @existing_topics.length> 0 %>
+            <h2>
+              <%= t('user_notifications.daily_summary.topic_updates') %>
+            </h2>
+            <ul>
+              <% @existing_topics.each do |topic| %>
+                <%= mailing_list_topic(topic, topic.posts.length) %>
+              <% end %>
+            </ul>
+          <% end %>
+        </td>
+      </tr>
+      <% @topics.each do |topic| %>
+        <tr>
+          <td class="digest-topic daily-summary-topic-header">
+            <h3> <%= email_topic_link(topic) %> </h3>
+          </td>
+        </tr>
+        <%- unless SiteSetting.private_email? %>
+          <tr>
+            <td class="digest-content daily-summary-topic-content">
+              <% topic.posts.each do |post| %>
+                <div>
+                  <img style="float: left; width: 20px; margin-right: 5px; border-radius: 5px 5px 5px 5px;"
+              src="<%= post.user.small_avatar_url %>" title="<%= post.user.username%>">
+                  <p>
+                    <a href='<%= "#{Discourse.base_url}/u/#{post.user.username}" %>'>
+                      <%- if show_username_on_post(post) %>
+                        <%= post.user.username %>
+                      <% end %>
+                      <%- if show_name_on_post(post) %>
+                        - <%= post.user.name %>
+                      <% end %>
+                    </a>
+                    <span> - </span>
+                    <span>
+                      <%= I18n.l(post.created_at, format: :long) %>
+                    </span>
+                  </p>
+                  <%= raw format_for_email(post, false) %>
+                  <hr />
+                </div>
+              <% end %>
+              <a style='font-size: 12px; float: right;' href='<%= Discourse.base_url + topic.relative_url %>'>
+                <%= t('user_notifications.daily_summary.view_this_topic') %>
+              </a>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

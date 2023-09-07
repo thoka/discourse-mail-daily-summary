@@ -8,15 +8,7 @@ module DiscourseMailDailySummary
       require_dependency 'user_notifications'
       class ::UserNotifications
 
-        def apply_notification_styles(email)
-          email.html_part.body = Email::Styles.new(email.html_part.body.to_s).tap do |styles|
-          styles.format_basic
-          styles.format_html
-          end.to_html
-          email
-        end
-
-        def mailing_list(user, opts={})
+        def daily_summary(user, opts={})
 
           def debug(msg)
             if SiteSetting.mail_daily_summary_debug_mode 
@@ -24,15 +16,21 @@ module DiscourseMailDailySummary
             end
           end
 
-          debug("mailing_list for #{user.id}/#{user.email} (opts: #{opts})")
+          debug("daily_summary for #{user.id}/#{user.email} (opts: #{opts})")
 
           prepend_view_path "plugins/discourse-mail-daily-summary/app/views"
 
-          @since = opts[:since] || 1.day.ago
+          # @since = opts[:since] || 1.day.ago
+          begin
+            @since = Time.parse(opts[:reject_reason])
+          rescue
+            @since = 1.day.ago
+          end
+
           @since_formatted = short_date(@since)
 
           debug("since: #{@since} ( #{@since_formatted} )")
-
+        
           topics = Topic
             .joins(:posts)
             .includes(:posts)
@@ -40,9 +38,9 @@ module DiscourseMailDailySummary
             .where("posts.created_at > ?", @since)
             .order("posts.id")
  
-          unless user.staff?
+          #unless user.staff? #TODO: check whisper allowed groups
             topics = topics.where("posts.post_type <> ?", Post.types[:whisper])
-          end
+          #end
 
           if DiscourseMailDailySummary.enabled_categories?
              topics = topics.where(category_id: DiscourseMailDailySummary.enabled_categories_including_subcategories)
@@ -54,24 +52,24 @@ module DiscourseMailDailySummary
 
           debug("topics: #{@topics.pluck(:id)}")
           return if @topics.empty?
-
+    
           build_summary_for(user)
           opts = {
-            from_alias: I18n.t('user_notifications.mailing_list.from', site_name: SiteSetting.title),
-            subject: I18n.t('user_notifications.mailing_list.subject_template', email_prefix: @email_prefix, date: @date),
+            from_alias: I18n.t('user_notifications.daily_summary.from', site_name: SiteSetting.title),
+            subject: I18n.t('user_notifications.daily_summary.subject_template', email_prefix: @email_prefix, date: @date),
             mailing_list_mode: true,
             add_unsubscribe_link: SiteSetting.mail_daily_summary_add_unsubscribe_link,
-            unsubscribe_url: "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}",
+            unsubscribe_url: "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}", #TODO: is this correct?
           }
 
-          apply_notification_styles(build_email(@user.email, opts))
+          build_email(@user.email, opts)
         end
 
       end 
 
       module ::Jobs
         class EnqueueMailDailySummary < Jobs::Scheduled
-          @@interval = 2 # in minutes
+          @@interval = 5 # in minutes
           every @@interval.minute 
 
           def debug(msg)
@@ -116,17 +114,23 @@ module DiscourseMailDailySummary
             compare_user_first_seen_hour = true
 
             scheduled_time = SiteSetting.mail_daily_summary_at
+            
+            begin
+              last_run_at = Time.parse(SiteSetting.mail_daily_summary_last_run_at)
+            rescue
+              last_run_at = 14.day.ago
+            end
+
             current_time = Time.now
-          
+ 
+            return if current_time - last_run_at < @@interval*60*2
+                      
             if scheduled_time.length > 0
-              debug("scheduled_time: #{scheduled_time}")
-              debug("current_time: #{current_time}")
-              debug("interval: #{@@interval}")
               
               compare_user_first_seen_hour = false
 
               if ! times_in_interval?(scheduled_time,current_time,@@interval)
-                debug("waiting till #{scheduled_time} (current server time: #{current_time.strftime('%H:%M')}) ...")
+                debug("waiting for scheduled_time: #{scheduled_time} (current server time: #{current_time.strftime('%H:%M')}, interval: #{@@interval})")
                 return
               end
             else
@@ -137,18 +141,27 @@ module DiscourseMailDailySummary
             end 
 
             debug("------------------- Enqueue Daily Summary -------------------")
+
+            SiteSetting.mail_daily_summary_last_run_at = current_time.to_s
+
             t = target_user_ids(compare_user_first_seen_hour)
             debug("target_users: #{t}")
+ 
             t.each do |user_id|
-              Jobs.enqueue(:user_email, type: :mailing_list, user_id: user_id) 
+              opts = {
+                type: :daily_summary,
+                user_id: user_id,
+                # since: last_run_at,
+                reject_reason: last_run_at.to_s # TODO: this is a hack, since no other option survives 
+              }
+              Jobs.enqueue(:user_email, opts) 
             end
+
           end
 
           def target_user_ids(compare_hour = true, repair_problems = true)
 
-            repair_problem_64661_33 if SiteSetting.mail_daily_summary_debug_mode # repair only, if a report will be shown
-
-            enabled_ids = UserCustomField.where(name: "user_mlm_daily_summary_enabled", value: "true").pluck(:user_id)
+            enabled_ids = UserCustomField.where(name: "user_mlm_daily_summary_enabled", value: ["true","t"]).pluck(:user_id)
             users = User.real
                 .activated
                 .not_suspended
@@ -166,15 +179,6 @@ module DiscourseMailDailySummary
             users.uniq
           end
 
-          def repair_problem_64661_33
-              # see https://meta.discourse.org/t/64761/33
-              not_yet_enabled_ids = UserCustomField.where(name: "user_mlm_daily_summary_enabled", value: "t").pluck(:user_id)
-              if not_yet_enabled_ids.length > 0
-                debug("fixing users with wrong option: #{not_yet_enabled_ids}")
-                ## todo: it would be better, to send a message to admins about the fixed problem and run this once at startup of this plugin
-                UserCustomField.where(name: "user_mlm_daily_summary_enabled", value: "t").update(value: "true")
-              end
-          end
         end
       end
     end

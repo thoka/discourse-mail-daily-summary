@@ -2,6 +2,7 @@ de:
   site_settings:
     mail_daily_summary_enabled: 'Erlaube Benutzern eine täglich Zusammenfassung zu empfangen.'
     mail_daily_summary_at: 'Wann soll die Zusammenfassung versendet werden? (HH:MM)'
+    mail_daily_summary_last_run_at: 'Zeitstempel des letzten Versands'
     mail_daily_summary_debug_mode: 'Debug Log aktivieren'
     mail_daily_summary_add_unsubscribe_link: 'Füge einen Link zum Abbestellen hinzu'
     mail_daily_summary_auto_enabled_groups: 'Gruppen, die die tägliche Zusammenfassung unabhängig von eigenen Einstellungen erhalten sollen'
@@ -9,13 +10,13 @@ de:
     mail_daily_summary_disabled_groups: 'Gruppen, die die tägliche Zusammenfassung nicht erhalten sollen (überschreibt die Einstellung oben)' 
 
   user_notifications:
-    mailing_list:
-      why: "Alle Aktivitäten in %{site_link} seit dem %{date}"   
-      subject_template: "[%{email_prefix}] Zusammenfassung vom %{date}"   
+    daily_summary:
+      why: "Aktivitäten im %{site_link} seit dem %{date}"   
+      subject_template: "[%{email_prefix}] Update vom %{date}"   
       unsubscribe: "Zum deaktivieren dieser täglichen Übersicht klick hier: %{unsubscribe_link}."   
       from: "%{site_name} Zusammenfassung"    
       new_topics: "Neue Themen"    
       topic_updates: "Neuigkeiten in bestehenden Themen"    
-      view_this_topic: "Dieses Thema auf der Seite anschauen"    
+      view_this_topic: "Dieses Thema im Forum anschauen"    
       back_to_top: "Zurück zum Anfang"
 
