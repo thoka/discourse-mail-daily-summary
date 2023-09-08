@@ -72,7 +72,7 @@ module DiscourseMailDailySummary
           @@interval = 5 # in minutes
           every @@interval.minute 
 
-          def debug(msg)
+          def debug(msg) 
             if SiteSetting.mail_daily_summary_debug_mode 
               Rails.logger.warn("MDS: #{msg}")
             end
@@ -118,7 +118,7 @@ module DiscourseMailDailySummary
             begin
               last_run_at = Time.parse(SiteSetting.mail_daily_summary_last_run_at)
             rescue
-              last_run_at = 14.day.ago
+              last_run_at = 1.day.ago
             end
 
             current_time = Time.now

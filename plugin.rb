@@ -1,6 +1,6 @@
 # name: discourse-mail-daily-summary
 # about: Send a daily summary email.
-# version: 0.0.7
+# version: 0.0.8
 # author: Thomas Kalka thomas.kalka@gmail.com
 # url: https://www.github.com/thoka/discourse-mail-daily-summary
 
