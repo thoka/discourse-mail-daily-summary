@@ -2,14 +2,14 @@
 <%= raw(t 'user_notifications.mailing_list.why', site_link: site_link, date: @since_formatted) %>
 
 <%- if @new_topics.present? -%>
-  ### <%= t 'user_notifications.mailing_list.new_topics' %>
+  ### <%= t 'user_notifications.daily_summary.new_topics' %>
   <%- @new_topics.each do |topic| %>
     <%= mailing_list_topic_text(topic) %>
   <%- end -%>
 <%- end -%>
 
 <%- if @existing_topics.present? -%>
-  ### <%= t 'user_notifications.mailing_list.new_topics' %>
+  ### <%= t 'user_notifications.daily_summary.new_topics' %>
   <%- @existing_topics.each do |topic| -%>
     <%= mailing_list_topic_text(topic) %>
     <%= topic.posts.length %>
