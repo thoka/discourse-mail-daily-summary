@@ -33,9 +33,9 @@ module DiscourseMailDailySummary
               .where("posts.created_at > ?", @since)
               .order("posts.id")
 
-          #unless user.staff? #TODO: check whisper allowed groups
-          topics = topics.where("posts.post_type <> ?", Post.types[:whisper])
-          #end
+          unless user.in_any_groups?(SiteSetting.whispers_allowed_groups_map)
+            topics = topics.where("posts.post_type <> ?", Post.types[:whisper])
+          end
 
           if DiscourseMailDailySummary.enabled_categories?
             topics =
