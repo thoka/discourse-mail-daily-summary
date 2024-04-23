@@ -100,6 +100,8 @@ module DiscourseMailDailySummary
           end
 
           def execute(args)
+            return unless SiteSetting.mail_daily_summary_enabled
+
             if false
               last_run_at = DB.query_single(<<~SQL, klass: self.class.name)
                 SELECT started_at FROM scheduler_stats
@@ -122,7 +124,7 @@ module DiscourseMailDailySummary
 
             current_time = Time.now
 
-            return if current_time - last_run_at < @@interval * 60 * 2
+            return if current_time - last_run_at < 20.hour
 
             if scheduled_time.length > 0
               compare_user_first_seen_hour = false
@@ -142,8 +144,6 @@ module DiscourseMailDailySummary
               end
             end
 
-            debug("------------------- Enqueue Daily Summary -------------------")
-
             SiteSetting.mail_daily_summary_last_run_at = current_time.to_s
 
             t = target_user_ids(compare_user_first_seen_hour)
@@ -161,11 +161,6 @@ module DiscourseMailDailySummary
           end
 
           def target_user_ids(compare_hour = true, repair_problems = true)
-            enabled_ids =
-              UserCustomField.where(
-                name: "user_mlm_daily_summary_enabled",
-                value: %w[true t],
-              ).pluck(:user_id)
             users =
               User
                 .real
@@ -173,12 +168,27 @@ module DiscourseMailDailySummary
                 .not_suspended
                 .not_silenced
                 .joins(:user_option)
-                .where(id: enabled_ids)
                 .where(staged: false)
                 .where("#{!SiteSetting.must_approve_users?} OR approved OR moderator OR admin")
                 .where(
                   "COALESCE(first_seen_at, '2010-01-01') <= CURRENT_TIMESTAMP - '23 HOURS'::INTERVAL",
                 ) # don't send unless you've been around for a day already
+
+            if SiteSetting.mail_daily_summary_enable_as_default
+              enabled_ids =
+                UserCustomField.where(
+                  name: "user_mlm_daily_summary_enabled",
+                  value: %w[true t],
+                ).pluck(:user_id)
+              users = users.where(id: enabled_ids)
+            else
+              disabled_ids =
+                UserCustomField.where(
+                  name: "user_mlm_daily_summary_enabled",
+                  value: %w[false f],
+                ).pluck(:user_id)
+              users = users.where.not(id: disabled_ids)
+            end
 
             users =
               users.where(
