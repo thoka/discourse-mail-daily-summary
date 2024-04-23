@@ -44,6 +44,10 @@ module DiscourseMailDailySummary
               )
           end
 
+          if SiteSetting.fixed_category_positions
+            topics = topics.joins(:category).order("categories.position", :id, "posts.id")
+          end
+
           @new_topics = topics.where("topics.created_at > ?", @since).uniq
           @existing_topics = topics.where("topics.created_at <= ?", @since).uniq
           @topics = topics.uniq
