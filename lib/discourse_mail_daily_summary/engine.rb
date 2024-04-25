@@ -7,6 +7,7 @@ module DiscourseMailDailySummary
       class ::UserNotifications
         def daily_summary(user, opts = {})
           def debug(msg)
+            puts "🔴UN: #{msg}"
             Rails.logger.warn("MDS: #{msg}") if SiteSetting.mail_daily_summary_debug_mode
           end
 
@@ -76,91 +77,78 @@ module DiscourseMailDailySummary
 
       module ::Jobs
         class EnqueueMailDailySummary < Jobs::Scheduled
-          @@interval = 5 # in minutes
+          @@interval = 1 # in minutes
           every @@interval.minute
 
           def debug(msg)
+            puts "🔴EMDS: #{msg}"
             Rails.logger.warn("MDS: #{msg}") if SiteSetting.mail_daily_summary_debug_mode
           end
 
-          def times_in_interval?(time1, time2, interval)
-            def parse_if_needed(t)
-              return t if t.is_a?(Time)
-              Time.parse(t)
-            end
-
-            def as_minutes(t)
-              t = parse_if_needed(t)
-              60 * t.hour + t.min
-            end
-
-            t1 = as_minutes(time1)
-            t2 = as_minutes(time2)
-            [(t1 - t2).abs, (t1 + 24 * 60 - t2).abs, (t1 - t2 - 24 * 60).abs].min < interval
+          def today_at(time)
+            hour, minute = time.split(":").map(&:to_i)
+            Time.new.change(hour: hour, min: minute, usec: 0)
           end
 
           def execute(args)
             return unless SiteSetting.mail_daily_summary_enabled
 
-            if false
-              last_run_at = DB.query_single(<<~SQL, klass: self.class.name)
-                SELECT started_at FROM scheduler_stats
-                  WHERE name = :klass AND success = true
-                  ORDER BY started_at DESC
-                LIMIT 1
-              SQL
-              debug("last run: #{last_run_at}")
-            end
-
-            compare_user_first_seen_hour = true
-
             scheduled_time = SiteSetting.mail_daily_summary_at
 
-            begin
-              last_run_at = Time.parse(SiteSetting.mail_daily_summary_last_run_at)
-            rescue StandardError
-              last_run_at = 1.day.ago
-            end
+            last_run_at =
+              begin
+                Time.parse(SiteSetting.mail_daily_summary_last_run_at)
+              rescue StandardError
+                nil
+              end
 
             current_time = Time.now
 
-            return if current_time - last_run_at < 20.hour
-
             if scheduled_time.length > 0
-              compare_user_first_seen_hour = false
+              # we have a scheduled time
+              scheduled_time = today_at(scheduled_time)
 
-              if !times_in_interval?(scheduled_time, current_time, @@interval)
-                debug(
-                  "waiting for scheduled_time: #{scheduled_time} (current server time: #{current_time.strftime("%H:%M")}, interval: #{@@interval})",
-                )
-                return
+              debug "last_run_at: #{last_run_at}, current_time: #{current_time}, scheduled_at: #{scheduled_time}"
+
+              if last_run_at # and we know when we last ran
+                # wait until we waited at least half a day since last run
+                return unless last_run_at + 12.hours <= current_time
+                # and its later than the scheduled time
+                return unless current_time >= scheduled_time
+                since = last_run_at
+              else
+                # we don't know when we last ran
+                # wait until we're past the scheduled time
+                return unless current_time >= scheduled_time
+                since = scheduled_time - 1.day
               end
+
+              compare_user_first_seen_hour = false
             else
-              if current_time.min > @@interval
-                debug(
-                  "waiting till next hour (current server time: #{current_time.strftime("%H:%M")}) ...",
-                )
-                return
-              end
+              compare_user_first_seen_hour = true
+              return if last_run_at && last_run_at.hour == current_time.hour
+
+              c = current_time
+              since = Time.new.change min: 0, sec: 0, usec: 0
             end
 
             SiteSetting.mail_daily_summary_last_run_at = current_time.to_s
 
             t = target_user_ids(compare_user_first_seen_hour)
-            debug("target_users: #{t}")
+            debug("since: #{since} target_users: #{t}")
 
             t.each do |user_id|
               opts = {
                 type: :daily_summary,
                 user_id: user_id,
-                # since: last_run_at,
-                reject_reason: last_run_at.to_s, # TODO: this is a hack, since no other option survives
+                # since: since ,
+                reject_reason: since.to_s, # TODO: this is a hack, since no other option survives
               }
               Jobs.enqueue(:user_email, opts)
             end
           end
 
-          def target_user_ids(compare_hour = true, repair_problems = true)
+          def target_user_ids(compare_hour = true)
             users =
               User
                 .real
@@ -174,7 +162,8 @@ module DiscourseMailDailySummary
                   "COALESCE(first_seen_at, '2010-01-01') <= CURRENT_TIMESTAMP - '23 HOURS'::INTERVAL",
                 ) # don't send unless you've been around for a day already
 
-            if SiteSetting.mail_daily_summary_enable_as_default
+            debug("users before filter: #{users.pluck(:id)}")
+            if !SiteSetting.mail_daily_summary_enable_as_default
               enabled_ids =
                 UserCustomField.where(
                   name: "user_mlm_daily_summary_enabled",
