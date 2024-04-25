@@ -15,12 +15,7 @@ module DiscourseMailDailySummary
 
           prepend_view_path "plugins/discourse-mail-daily-summary/app/views"
 
-          # @since = opts[:since] || 1.day.ago
-          begin
-            @since = Time.parse(opts[:reject_reason])
-          rescue StandardError
-            @since = 1.day.ago
-          end
+          @since = Time.parse(opts[:since])
 
           @since_formatted = short_date(@since)
 
@@ -76,6 +71,56 @@ module DiscourseMailDailySummary
       end
 
       module ::Jobs
+        class UserSummaryEmail < ::Jobs::UserEmail
+          def message_for_email(user, post, type, notification, args = nil)
+            puts "🔴🔴 #{user.id}/#{user.email} type: #{type} args: #{args}"
+            args ||= {}
+
+            email_token = args[:email_token]
+            to_address = args[:to_address]
+
+            if user.anonymous?
+              return skip_message(SkippedEmailLog.reason_types[:user_email_anonymous_user])
+            end
+
+            if user.suspended?
+              if !type.in?(%w[user_private_message account_suspended])
+                return skip_message(SkippedEmailLog.reason_types[:user_email_user_suspended_not_pm])
+              elsif post&.topic&.group_pm?
+                return skip_message(SkippedEmailLog.reason_types[:user_email_user_suspended])
+              end
+            end
+
+            return if user.staged
+
+            email_args = {}
+
+            # Make sure that mailer exists
+            unless UserNotifications.respond_to?(type)
+              raise Discourse::InvalidParameters.new("type=#{type}")
+            end
+
+            email_args[:email_token] = email_token if email_token.present?
+
+            if !EmailLog::CRITICAL_EMAIL_TYPES.include?(type) &&
+                 user.user_stat.bounce_score >= SiteSetting.bounce_score_threshold
+              return skip_message(SkippedEmailLog.reason_types[:exceeded_bounces_limit])
+            end
+
+            email_args[:since] = args[:since]
+
+            message =
+              EmailLog.unique_email_per_post(post, user) do
+                UserNotifications.public_send(type, user, email_args)
+              end
+
+            # Update the to address if we have a custom one
+            message.to = to_address if message && to_address.present?
+
+            [message, nil]
+          end
+        end
+
         class EnqueueMailDailySummary < Jobs::Scheduled
           @@interval = 1 # in minutes
           every @@interval.minute
@@ -110,16 +155,16 @@ module DiscourseMailDailySummary
 
               debug "last_run_at: #{last_run_at}, current_time: #{current_time}, scheduled_at: #{scheduled_time}"
 
-              if last_run_at # and we know when we last ran
-                # wait until we waited at least half a day since last run
-                return unless last_run_at + 12.hours <= current_time
-                # and its later than the scheduled time
-                return unless current_time >= scheduled_time
-                since = last_run_at
+              if last_run_at
+                last_day_run = last_run_at.change(hour: 0, min: 0, sec: 0, usec: 0)
+                current_day = current_time.change(hour: 0, min: 0, sec: 0, usec: 0)
+
+                return if current_day <= last_day_run
+                return if current_time < scheduled_time
+
+                since = [last_run_at, scheduled_time - 14.day].max
               else
-                # we don't know when we last ran
-                # wait until we're past the scheduled time
-                return unless current_time >= scheduled_time
+                return if current_time < scheduled_time
                 since = scheduled_time - 1.day
               end
 
@@ -139,12 +184,12 @@ module DiscourseMailDailySummary
 
             t.each do |user_id|
               opts = {
-                type: :daily_summary,
+                type: "daily_summary",
                 user_id: user_id,
-                # since: since ,
+                since: since.to_s,
                 reject_reason: since.to_s, # TODO: this is a hack, since no other option survives
               }
-              Jobs.enqueue(:user_email, opts)
+              Jobs.enqueue(:user_summary_email, opts)
             end
           end
 
