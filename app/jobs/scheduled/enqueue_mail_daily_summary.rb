@@ -37,8 +37,14 @@ class EnqueueMailDailySummary < Jobs::Scheduled
         last_day_run = last_run_at.change(hour: 0, min: 0, sec: 0, usec: 0)
         current_day = current_time.change(hour: 0, min: 0, sec: 0, usec: 0)
 
-        return if current_day <= last_day_run
-        return if current_time < scheduled_time
+        if current_day <= last_day_run
+          debug("allready run today")
+          return
+        end
+        if current_time < scheduled_time
+          debug("waiting for scheduled time")
+          return
+        end
 
         since = [last_run_at, scheduled_time - 14.day].max
       else
