@@ -3,7 +3,6 @@
 module Jobs
   class UserDailySummaryEmail < ::Jobs::UserEmail
     def message_for_email(user, post, type, notification, args = nil)
-      puts "🔴🔴 #{user.id}/#{user.email} type: #{type} args: #{args}"
       args ||= {}
 
       email_token = args[:email_token]
