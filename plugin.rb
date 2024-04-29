@@ -11,12 +11,23 @@ enabled_site_setting :mail_daily_summary_enabled
 
 DiscoursePluginRegistry.serialized_current_user_fields << "user_mlm_daily_summary_enabled"
 
-load File.expand_path("../lib/discourse_mail_daily_summary/engine.rb", __FILE__)
-
 after_initialize do
+  require_relative "lib/discourse_mail_daily_summary/user_notifications_extension.rb"
+  require_relative "lib/discourse_mail_daily_summary/engine.rb"
+
+  require_relative "app/jobs/regular/user_daily_summary_email.rb"
+  require_relative "app/jobs/scheduled/enqueue_mail_daily_summary.rb"
+
+  require_relative "app/helpers/helper.rb"
+
   # TODO change name? this name is historical
   User.register_custom_field_type("user_mlm_daily_summary_enabled", :boolean)
   register_editable_user_custom_field :user_mlm_daily_summary_enabled
+
+  reloadable_patch do |plugin|
+    UserNotifications.prepend MailDailySummary::UserNotificationsExtension
+    UserNotifications.helper DiscourseMailDailySummary::Helper
+  end
 
   Email::Styles.register_plugin_style do |fragment|
     @fragment = fragment
