@@ -1,0 +1,5 @@
+<li>
+  <% anchor = "#topic-#{topic.id}" %>
+  <% link = "<a href=\"#{anchor}\">↓</a>".html_safe %>
+  <%= email_topic_link(topic) %> <%= link %>
+</li>

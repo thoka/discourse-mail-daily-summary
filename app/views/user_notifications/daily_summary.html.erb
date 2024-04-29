@@ -1,5 +1,6 @@
-<div class="daily-summary">
-  <table class="daily-summary-header">
+<%- # include DiscourseMailDailySummary::Helper %>
+<div class="daily-summary summary-email">
+  <table border="0" cellspacing="0" width="100%">
     <thead>
       <tr>
         <td class="digest-header">
@@ -24,31 +25,28 @@
       <tr>
         <td class="daily-summary-topic-list">
           <% if @new_topics.length> 0 %>
-            <h2>
-              <%= t('user_notifications.daily_summary.new_topics') %>
-            </h2>
+            <h4><%= t('user_notifications.daily_summary.new_topics') %></h4>
             <ul>
               <% @new_topics.each do |topic| %>
-                <%= mailing_list_topic(topic, topic.posts.length) %>
+                <%= daily_summary_topic(topic, topic.posts.length) %>
               <% end %>
             </ul>
           <% end %>
           <% if @existing_topics.length> 0 %>
-            <h2>
-              <%= t('user_notifications.daily_summary.topic_updates') %>
-            </h2>
+            <h4><%= t('user_notifications.daily_summary.topic_updates') %></h4>
             <ul>
               <% @existing_topics.each do |topic| %>
-                <%= mailing_list_topic(topic, topic.posts.length) %>
+                <%= daily_summary_topic(topic, topic.posts.length) %>
               <% end %>
             </ul>
           <% end %>
+          <hr />
         </td>
       </tr>
       <% @topics.each do |topic| %>
-        <tr>
+        <tr >
           <td class="digest-topic daily-summary-topic-header">
-            <h3> <%= email_topic_link(topic) %> </h3>
+            <h3 name="topic-<%= topic.id %>"> <%= email_topic_link(topic) %> </h3>
           </td>
         </tr>
         <%- unless SiteSetting.private_email? %>
