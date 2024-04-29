@@ -1,86 +1,255 @@
-<%- # include DiscourseMailDailySummary::Helper %>
-<div class="daily-summary summary-email">
+<div class="summary-email">
+  <span class="preheader" style="display:none!important;color:#f3f3f3;font-size:1px;line-height:1px;max-height:0;max-width:0;mso-hide:all!important;opacity:0;overflow:hidden;visibility:hidden">
+    <%= @preheader_text %>
+  </span>
   <table border="0" cellspacing="0" width="100%">
-    <thead>
-      <tr>
-        <td class="digest-header">
-          <a href="<%= Discourse.base_url %>">
-            <%- if logo_url.blank? %>
-              <%= SiteSetting.title %>
-            <%- else %>
-              <img src="<%= logo_url %>" height="40"
-                style="max-height:40px;min-height:40px;height:40px"
-                alt="<%= SiteSetting.title %>">
-            <%- end %>
-          </a>
-          <br />
-          <div style='padding-top: 10px;'>
-            <%= raw(t 'user_notifications.daily_summary.why' , site_link: html_site_link, date: @since_formatted) %>
-          </div>
-          <hr>
-        </td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="daily-summary-topic-list">
-          <% if @new_topics.length> 0 %>
-            <h4><%= t('user_notifications.daily_summary.new_topics') %></h4>
-            <ul>
-              <% @new_topics.each do |topic| %>
-                <%= daily_summary_topic(topic, topic.posts.length) %>
-              <% end %>
-            </ul>
-          <% end %>
-          <% if @existing_topics.length> 0 %>
-            <h4><%= t('user_notifications.daily_summary.topic_updates') %></h4>
-            <ul>
-              <% @existing_topics.each do |topic| %>
-                <%= daily_summary_topic(topic, topic.posts.length) %>
-              <% end %>
-            </ul>
-          <% end %>
-          <hr />
-        </td>
-      </tr>
-      <% @topics.each do |topic| %>
-        <tr >
-          <td class="digest-topic daily-summary-topic-header">
-            <h3 name="topic-<%= topic.id %>"> <%= email_topic_link(topic) %> </h3>
-          </td>
-        </tr>
-        <%- unless SiteSetting.private_email? %>
+    <tr>
+      <td>
+        <table width="100%" class="digest-header text-header with-dir" style="background-color:#<%= @header_bgcolor -%>;">
           <tr>
-            <td class="digest-content daily-summary-topic-content">
-              <% topic.posts.each do |post| %>
-                <div>
-                  <img style="float: left; width: 20px; margin-right: 5px; border-radius: 5px 5px 5px 5px;"
-              src="<%= post.user.small_avatar_url %>" title="<%= post.user.username%>">
-                  <p>
-                    <a href='<%= "#{Discourse.base_url}/u/#{post.user.username}" %>'>
-                      <%- if show_username_on_post(post) %>
-                        <%= post.user.username %>
-                      <% end %>
-                      <%- if show_name_on_post(post) %>
-                        - <%= post.user.name %>
-                      <% end %>
-                    </a>
-                    <span> - </span>
-                    <span>
-                      <%= I18n.l(post.created_at, format: :long) %>
-                    </span>
-                  </p>
-                  <%= raw format_for_email(post, false) %>
-                  <hr />
-                </div>
-              <% end %>
-              <a style='font-size: 12px; float: right;' href='<%= Discourse.base_url + topic.relative_url %>'>
-                <%= t('user_notifications.daily_summary.view_this_topic') %>
+            <td></td>
+            <td width="650" align="center" style="text-align: center;padding: 20px 0; font-family:Arial,sans-serif;">
+              <a href="<%= Discourse.base_url %>" style="color:#<%= @header_color -%>;font-size:22px;text-decoration:none;">
+              <%- if logo_url.blank? %>
+                <%= SiteSetting.title %>
+              <%- else %>
+                <img src="<%= logo_url %>" height="40" style="clear:both;display:block;height:40px;margin:auto;max-width:100%;outline:0;text-decoration:none;" alt="<%= SiteSetting.title %>">
+              <%- end %>
               </a>
             </td>
+            <td></td>
           </tr>
+        </table>
+
+        <table width="100%" class="body digest-content with-dir" style="background:#f3f3f3;padding:0;border-spacing:0;font-family:Arial,sans-serif;font-size:14px;font-weight:200;line-height:1.3;vertical-align:top;">
+          <tr>
+            <td class="side-spacer" style="vertical-align:top;padding:0;">
+              <div class="with-accent-colors">
+                <table class="spacer with-accent-colors" style="border-spacing:0;padding:0;width:100%">
+                  <tbody>
+                    <tr>
+                      <td height="100px" style="height:100px;border-collapse:collapse!important;margin:0;mso-line-height-rule:exactly;padding:0;">&nbsp;</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+            <td  width="650" style="vertical-align:top;padding:0;font-family:Arial,sans-serif;">
+              <table align="center" class="digest-content-header with-accent-colors with-dir" style="border-spacing:0;margin:0;padding:0;vertical-align:top;width:100%">
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse!important;color:#0a0a0a;line-height:1.3;margin:0;padding:0;vertical-align:top;word-wrap:normal">
+                      <br/>
+                      <center class="header-since-last-visit with-accent-colors" style="font-size:22px;font-weight:400;mso-line-height-rule:exactly;line-height:36px;"><%= raw(t 'user_notifications.daily_summary.why' , site_link: html_site_link, date: @since_formatted) %></center>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              <% if false %> 
+                <center class="header-popular-topics with-accent-colors" style="font-size:22px;font-weight:400;margin-bottom: 8px; mso-line-height-rule:exactly;line-height:36px;"><%=t 'user_notifications.digest.popular_topics' %></center>
+              <% end %>
+
+              <table class="with-dir" align="center" style="border-spacing:0;background:#fefefe;margin:0;padding:0;text-align:center;vertical-align:top;width:100%;margin-bottom:20px;">
+                <tbody>
+                  <tr>
+                    <td class="digest-popular-topic-wrapper with-dir" style="-moz-hyphens:auto;-webkit-hyphens:auto;border-collapse:collapse!important;color:#0a0a0a;hyphens:auto;line-height:1.3;margin:0;padding:0 0 0 16px;vertical-align:top;word-wrap:normal">
+                      <% if @new_topics.length> 0 %>
+                        <h4><%= t('user_notifications.daily_summary.new_topics') %></h4>
+                        <ul>
+                          <% @new_topics.each do |topic| %>
+                            <%= daily_summary_topic(topic, topic.posts.length) %>
+                          <% end %>
+                        </ul>
+                      <% end %>
+                      <% if @existing_topics.length> 0 %>
+                        <h4><%= t('user_notifications.daily_summary.topic_updates') %></h4>
+                        <ul>
+                          <% @existing_topics.each do |topic| %>
+                            <%= daily_summary_topic(topic, topic.posts.length) %>
+                          <% end %>
+                        </ul>
+                      <% end %>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table class="with-dir" align="center" style="border-spacing:0;background:#fefefe;margin:0;padding:0;text-align:center;vertical-align:top;width:100%">
+                <tbody>
+                  <tr>
+                    <td class="digest-popular-topic-wrapper with-dir" style="-moz-hyphens:auto;-webkit-hyphens:auto;border-collapse:collapse!important;color:#0a0a0a;hyphens:auto;line-height:1.3;margin:0;padding:0;vertical-align:top;word-wrap:normal">
+                      <% @topics.each_with_index do |t, i| %>
+                        <!--   Beginning of Topics   -->
+                        <table class="digest-topic popular-topic with-dir" style="width:100%">
+                          <tbody>
+                            <tr>
+                              <td class="digest-topic-category with-dir" style="margin:0;padding:<%= rtl? ? '0 16px 0 0' : '0 0 0 16px' %>;vertical-align:top;">
+                                <p style="color:#8f8f8f;line-height:1.3;margin: 20px 0 0 0;">
+                                  <%= category_badge(t.category, inline_style: true, absolute_url: true) %>
+                                </p>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <table class="digest-topic-title-wrapper with-dir" style="vertical-align:top;width:100%">
+                          <tbody>
+                            <tr>
+                              <td class="with-dir" style="padding:<%= rtl? ? '0 16px 8px 8px' : '0 8px 8px 16px' %>;width:100%;">
+                                <h2 name="topic-<%= t.id %>" class="digest-topic-title" style="font-size:18px;font-weight:400;line-height:1.3;margin:0;padding:0;word-wrap:normal">
+                                  <a href="<%= Discourse.base_url_no_prefix + t.relative_url %>" style="font-weight:400;line-height:1.3;margin:0;padding:0;text-decoration:none">
+                                    <strong><%= gsub_emoji_to_unicode(t.title.truncate(100, separator: /\s/)) -%></strong>
+                                  </a>
+                                </h2>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <% t.posts.each do |post| %>
+                          <table class="digest-topic-title-wrapper with-dir" style="padding:0;position:relative;vertical-align:top;width:100%;padding-top:10px;">
+                            <tbody>
+                              <tr>
+                                <td class="digest-topic-op" style="color:#0a0a0a;line-height:1.3;margin:0 auto;padding:<%= rtl? ? '0 16px 0 0' : '0 0 0 16px' %>;width:50px;vertical-align:top;">
+                                  <img src="<%= post.user.small_avatar_url -%>" style="border-radius:50%;clear:both;display:block;float:none;height:40px;width:40px;margin:0;max-width:100%;outline:0;text-align:center;text-decoration:none;" align="center" alt="<%= t.user.username -%>">
+                                </td>
+                                <td style="color:#0a0a0a;padding:<%= rtl? ? '0 8px 0 16px' : '0 16px 0 8px' %>;vertical-align:top;">
+                                  <% if post.user %>
+                                    <% if SiteSetting.enable_names? && post.user.name.present? && post.user.name.downcase != post.user.username.downcase %>
+                                      <h6 class="digest-topic-username" style="color:inherit;line-height:1.3;margin:0;padding:0;font-weight: normal;font-size:16px;"><%= post.user.name -%></h6>
+                                    <% end %>
+                                    <p class="digest-topic-name" style="color:inherit;font-size:14px;font-weight:400;line-height:1.3;margin:0 0 8px 0;padding:0;word-wrap:normal;"><%= post.user.username -%></p>
+                                  <% end %>
+                                </td>
+                                <td class="with-dir" style="margin:0;padding:<%= rtl? ? '0 0 0 16px' : '0 16px 0 0' %>;text-align:<%= rtl? ? 'left' : 'right' %>;vertical-align:top;">
+                                  <p class="text-right digest-created-at" style="color:#8f8f8f;line-height:1.3;margin:20px 0 0 0;font-weight:400;">
+                                    <%= short_date(post.created_at) %>
+                                  </p>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <table class="digest-topic-body with-dir" style="border-bottom:1px solid #f3f3f3;mso-border-bottom-alt:none;padding:0;vertical-align:top;width:100%;">
+                            <tbody>
+                              <tr>
+                                <td class="post-excerpt" style="color:#0a0a0a;font-size:14px;padding:0 16px 0 16px;width:100%;font-weight:normal;mso-padding-alt: 16px;">
+                                  <%= raw format_for_email(post, false) %>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        <% end %>
+                        <table class="digest-topic-stats with-dir" style="padding:0;vertical-align:top;width:100%; padding-top:20px;">
+                          <tbody>
+                            <tr>
+                              <td class="digest-topic-stat" style="padding:<%= rtl? ? '0 16px 16px 8px' : '0 8px 16px 16px' %>;white-space:nowrap;vertical-align:top;width:75px">
+                                <img class="digest-icon" src="<%= email_image_url 'heart_lightdark.png' -%>" style="clear:both;display:inline-block;float:<%= rtl? ? 'right' : 'left' %>;height:20px;width:20px;margin:0;max-width:100%;outline:0;text-decoration:none;" alt="likes">
+                                <span style="color:#8f8f8f;float:<%= rtl? ? 'right' : 'left' %>;line-height:1.3;margin:0 5px 10px 5px;padding:0;font-weight:400;">&nbsp;<%= t.like_count -%></span>
+                              </td>
+                              <td class="digest-topic-stat" style="padding:0 8px 16px 8px;white-space:nowrap;vertical-align:top;width:75px">
+                                <img class="digest-icon" src="<%= email_image_url 'comment_lightdark.png' -%>" style="clear:none;display:inline-block;float:<%= rtl? ? 'right' : 'left' %>;height:20px;width:20px;margin:0;max-width:100%;outline:0;text-decoration:none;" alt="replies">
+                                <span style="color:#8f8f8f;float:<%= rtl? ? 'right' : 'left' %>;line-height:1.3;margin:0 5px 10px 5px;padding:0;font-weight:400;">&nbsp;<%= t.posts_count - 1 -%></span>
+                              </td>
+                              <td class="digest-read-more-wrap" style="line-height:1.3;padding:<%= rtl? ? '0 8px 0 16px' : '0 16px 0 8px' %>;text-align:<%= rtl? ? 'left' : 'right' %>;white-space:nowrap;vertical-align:top;">
+                                <span class="with_accent-colors mso-accent-link">
+                                  <a href="<%= Discourse.base_url_no_prefix + t.relative_url %>" class="digest-button with-accent-colors" style="width:100%;text-decoration:none;padding:8px 16px;white-space:nowrap;">
+                                    <%=t 'user_notifications.daily_summary.view_this_topic' %>
+                                  </a>
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="background-color:#f3f3f3;">
+                          <table class="spacer with-dir" style="padding:0;width:100%;background-color:#f3f3f3">
+                            <tbody><tr><td height="20px" style="border-collapse:collapse!important;line-height:20px;margin:0;mso-line-height-rule:exactly;padding:0;">&#xA0;</td></tr></tbody>
+                          </table>
+                        </div>
+                        <!--   End of topics   -->
+                      <% end %>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+
+            <td class="side-spacer" style="vertical-align:top;padding:0;">
+              <!-- Background that goes down part-way behind content -->
+              <div class="with-accent-colors">
+                <table class="spacer with-dir with-accent-colors" style="border-spacing:0;padding:0;width:100%">
+                  <tbody>
+                    <tr>
+                      <td height="100px" style="height:100px;border-collapse:collapse!important;margin:0;mso-line-height-rule:exactly;padding:0;">&nbsp;</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <%# summary_custom_html("above_popular_topics") %>
+
+        <style>
+          @media only screen {
+            html {
+              min-height: 100%;
+              background: #f3f3f3
+            }
+          }
+
+          @media only screen and (max-width:900px) {
+            table.body img {
+              width: auto;
+              height: auto
+            }
+            table.body center {
+              min-width: 0!important;
+            }
+            table.body .side-spacer {
+              width: 2.5%!important;
+            }
+            table.body .column,
+            table.body .columns {
+              height: auto!important;
+              -moz-box-sizing: border-box;
+              -webkit-box-sizing: border-box;
+              box-sizing: border-box;
+              padding-left: 16px!important;
+              padding-right: 16px!important
+            }
+            table.body .column .column,
+            table.body .column .columns,
+            table.body .columns .column,
+            table.body .columns .columns {
+              padding-left: 0!important;
+              padding-right: 0!important
+            }
+          }
+        </style>
+
+        <%# summary_custom_html("above_footer") %>
+
+        <% if false %> <%# TODO: allow unsubscribe  %>
+          <table width="100%" class='summary-footer with-dir'>
+            <tr>
+              <td></td>
+              <td width="650" align="center">
+                <%=raw(t 'user_notifications.digest.unsubscribe',
+                        site_link: html_site_link,
+                        email_preferences_link: link_to(t('user_notifications.digest.your_email_settings'), Discourse.base_url + '/my/preferences/emails'),
+                        unsubscribe_link: link_to(t('user_notifications.digest.click_here'), "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}"))  %>
+              </td>
+              <td></td>
+            </tr>
+          </table>
         <% end %>
-      <% end %>
-    </tbody>
+
+        <%# summary_custom_html("below_footer") %>
+
+      </td>
+      <td></td>
+    </tr>
   </table>
 </div>
+
+
