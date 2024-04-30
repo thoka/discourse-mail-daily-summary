@@ -8,7 +8,7 @@ module MailDailySummary
         Rails.logger.warn("MDS: #{msg}") if SiteSetting.mail_daily_summary_debug_mode
       end
 
-      debug("daily_summary for #{user.id}/#{user.email} (opts: #{opts})")
+      # debug("daily_summary for #{user.id}/#{user.email} (opts: #{opts})")
 
       prepend_view_path "plugins/discourse-mail-daily-summary/app/views"
 
@@ -16,15 +16,12 @@ module MailDailySummary
 
       @since_formatted = short_date(@since)
 
-      debug("since: #{@since} ( #{@since_formatted} )")
-
       topics =
         Topic
           .joins(:posts)
           .includes(:posts)
           .for_digest(user, 100.years.ago)
           .where("posts.created_at > ?", @since)
-          .order("posts.id")
 
       unless user.in_any_groups?(SiteSetting.whispers_allowed_groups_map)
         topics = topics.where("posts.post_type <> ?", Post.types[:whisper])
@@ -36,15 +33,17 @@ module MailDailySummary
       end
 
       if SiteSetting.fixed_category_positions
-        topics = topics.joins(:category).order("categories.position", :id, "posts.post_number")
+        topics = topics.joins(:category).order("categories.position", :id, "posts.id")
+      else
+        topics = topics.order("posts.id")
       end
+
+      @topics = topics.uniq
+
+      return if @topics.empty?
 
       @new_topics = topics.where("topics.created_at > ?", @since).uniq
       @existing_topics = topics.where("topics.created_at <= ?", @since).uniq
-      @topics = topics.uniq
-
-      debug("topics: #{@topics.pluck(:id)}")
-      return if @topics.empty?
 
       build_summary_for(user)
       opts = {
