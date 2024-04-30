@@ -27,7 +27,7 @@ after_initialize do
 
   reloadable_patch do |plugin|
     UserNotifications.prepend MailDailySummary::UserNotificationsExtension
-    UserNotifications.helper DiscourseMailDailySummary::MailDailySummaryHelper
+    UserNotifications.helper MailDailySummaryHelper
   end
 
   register_email_unsubscriber(
