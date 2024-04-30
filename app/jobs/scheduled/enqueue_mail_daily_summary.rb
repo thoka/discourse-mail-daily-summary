@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module Jobs
   class EnqueueMailDailySummary < Jobs::Scheduled
-    @@interval = 0.25
+    @@interval = 5
     every @@interval.minute
 
     def debug(msg)
