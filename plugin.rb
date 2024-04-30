@@ -3,6 +3,7 @@
 # version: 0.0.11
 # authors: Thomas Kalka
 # url: https://www.github.com/thoka/discourse-mail-daily-summary
+# meta_topic_id: 306214
 
 # this is a fork of Joe Buhlig's discourse-mlm-daily-summary with additional features
 # https://www.github.com/joebuhlig/discourse-mlm-daily-summary
