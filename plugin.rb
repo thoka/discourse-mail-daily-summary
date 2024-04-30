@@ -18,7 +18,7 @@ after_initialize do
   require_relative "lib/discourse_mail_daily_summary/user_notifications_extension"
   require_relative "app/jobs/regular/user_daily_summary_email"
   require_relative "app/jobs/scheduled/enqueue_mail_daily_summary"
-  require_relative "app/helpers/helper"
+  require_relative "app/helpers/mail_daily_summary_helper"
   require_relative "lib/discourse_mail_daily_summary/email_controller_helper"
 
   # TODO change name? this name is historical
@@ -27,7 +27,7 @@ after_initialize do
 
   reloadable_patch do |plugin|
     UserNotifications.prepend MailDailySummary::UserNotificationsExtension
-    UserNotifications.helper DiscourseMailDailySummary::Helper
+    UserNotifications.helper DiscourseMailDailySummary::MailDailySummaryHelper
   end
 
   register_email_unsubscriber(
