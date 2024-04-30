@@ -229,21 +229,21 @@
 
         <%# summary_custom_html("above_footer") %>
 
-        <% if false %> <%# TODO: allow unsubscribe  %>
-          <table width="100%" class='summary-footer with-dir'>
-            <tr>
-              <td></td>
-              <td width="650" align="center">
-                <%=raw(t 'user_notifications.digest.unsubscribe',
-                        site_link: html_site_link,
-                        email_preferences_link: link_to(t('user_notifications.digest.your_email_settings'), Discourse.base_url + '/my/preferences/emails'),
-                        unsubscribe_link: link_to(t('user_notifications.digest.click_here'), "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}"))  %>
-              </td>
-              <td></td>
-            </tr>
-          </table>
+        <% if SiteSetting.mail_daily_summary_add_unsubscribe_link %>
+        <table width="100%" class='summary-footer with-dir'>
+          <tr>
+            <td></td>
+            <td width="650" align="center">
+              <%=raw(t 'user_notifications.daily_summary.unsubscribe',
+                      site_link: html_site_link,
+                      email_preferences_link: link_to(t('user_notifications.daily_summary.your_email_settings'), Discourse.base_url + '/my/preferences/emails'),
+                      unsubscribe_link: link_to(t('user_notifications.daily_summary.click_here'), "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}"))  %>
+            </td>
+            <td></td>
+          </tr>
+        </table>
         <% end %>
-
+        
         <%# summary_custom_html("below_footer") %>
 
       </td>

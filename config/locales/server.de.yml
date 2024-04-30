@@ -13,10 +13,18 @@ de:
     daily_summary:
       why: "Aktivitäten im %{site_link} seit dem %{date}"   
       subject_template: "[%{email_prefix}] Update vom %{date}"   
-      unsubscribe: "Zum deaktivieren dieser täglichen Übersicht klick hier: %{unsubscribe_link}."   
+      unsubscribe: "Zum deaktivieren dieser täglichen Übersicht %{unsubscribe_link} oder ändere %{email_preferences_link}."   
+      your_email_settings: "Deine Email-Einstellungen"
+      click_here: "klicke hier"
       from: "%{site_name} Zusammenfassung"    
       new_topics: "Neue Themen"    
       topic_updates: "Neuigkeiten in bestehenden Themen"    
       view_this_topic: "Dieses Thema im Forum anschauen"    
       back_to_top: "Zurück zum Anfang"
 
+  unsubscribe:
+    unsubscribe_daily_summaries: "Tägliche Zuammenstellung neuer Beiträge abbestellen" 
+    daily_summary:
+      enabled_groups: "Die Mitgliedschaft in diesen Gruppen abboniert automatisch die tägliche Zusammenfassung:"
+      leave_groups: "Bitte verlasse diese Gruppen, um die tägliche Zusammenfassung abzustellen."
+   

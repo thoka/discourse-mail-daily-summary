@@ -1,0 +1,23 @@
+<% if @unsubscribe_mail_daily_summary %>
+  <%# TODO: add info about auto enabled groups%>
+
+  <% if @mail_daily_summary_enabling_groups %>
+  <p>
+    <%= t 'unsubscribe.daily_summary.enabled_groups' %>
+     
+    <ul> <% @mail_daily_summary_enabling_groups.each do |groupname| %> 
+      <li><%= groupname %></li>
+    <% end %> </ul>
+    <%= t 'unsubscribe.daily_summary.leave_groups' %>
+      
+  </p>
+  <% else %>
+  <p>
+    <label>
+      <%= check_box_tag 'unsubscribe_daily_summaries', 1, @current_mail_daily_summary_subscibed==false %>
+      <%= t 'unsubscribe.unsubscribe_daily_summaries', sitename: SiteSetting.title %>
+    </label>
+  </p>
+  <% end %>
+<% end %>
+

@@ -45,6 +45,8 @@ module MailDailySummary
       @new_topics = topics.where("topics.created_at > ?", @since).uniq
       @existing_topics = topics.where("topics.created_at <= ?", @since).uniq
 
+      @unsubscribe_key = UnsubscribeKey.create_key_for(user, MailDailySummary::UNSUBSCRIBE)
+
       build_summary_for(user)
       opts = {
         from_alias: I18n.t("user_notifications.daily_summary.from", site_name: SiteSetting.title),
@@ -56,7 +58,7 @@ module MailDailySummary
           ),
         mailing_list_mode: true,
         add_unsubscribe_link: SiteSetting.mail_daily_summary_add_unsubscribe_link,
-        unsubscribe_url: "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}", #TODO: is this correct?
+        unsubscribe_url: "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}",
       }
       build_email(@user.email, opts)
     end

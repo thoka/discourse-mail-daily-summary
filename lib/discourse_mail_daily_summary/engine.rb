@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-module MailDailySummary
+module ::MailDailySummary
+  PLUGIN_NAME = "mail-daily-summary"
+  UNSUBSCRIBE = "mail_daily_summary"
+
   class Engine < ::Rails::Engine
+    engine_name PLUGIN_NAME
     isolate_namespace MailDailySummary
-    #    config.after_initialize do
-    #      require_dependency "user_notifications"
-    #    end##
-    #
   end
 
   def self.enabled_categories

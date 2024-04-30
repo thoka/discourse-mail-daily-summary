@@ -13,9 +13,17 @@ en:
     daily_summary:
       why: "Activity on %{site_link} since %{date}"   
       subject_template: "[%{email_prefix}] Daily update for %{date}"   
-      unsubscribe: "This summary is sent daily due to mail daily summary being enabled in your preferences. To unsubscribe %{unsubscribe_link}."   
+      unsubscribe: "This summary is sent daily due to mail daily summary being enabled in your preferences. To unsubscribe %{unsubscribe_link} or change %{email_preferences_link}."   
       from: "%{site_name} summary"    
       new_topics: "New topics"    
       topic_updates: "Topic updates"    
       view_this_topic: "View this topic"    
       back_to_top: "Back to top"
+      your_email_settings: "your email settings"
+      click_here: "click here"
+
+  unsubscribe:
+    unsubscribe_daily_summaries: "Unsubscribe from daily summaries"  
+    daily_summary:
+      enabled_groups: "Membership in these groups automatically subscribes you to the daily summary:"
+      leave_groups: "Please leave these groups to turn off the daily summary."
