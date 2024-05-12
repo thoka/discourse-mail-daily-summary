@@ -8,6 +8,8 @@ en:
     mail_daily_summary_add_unsubscribe_link: 'Add an unsubscribe link'
     mail_daily_summary_enabled_categories: 'If set, only topics inside these categories (including subcategories) will be included into the summary'
     mail_daily_summary_auto_enabled_groups: 'This groups will get summaries, independent of individual settings'
+    mail_daily_summary_frequency: "Frequency of summary emails"
+    mail_daily_summary_day_of_week: "Day of the week to send the summary (0 = Sunday)"
 
   user_notifications:
     daily_summary:

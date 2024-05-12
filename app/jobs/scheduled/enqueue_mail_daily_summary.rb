@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 module Jobs
   class EnqueueMailDailySummary < Jobs::Scheduled
-    @@interval = 5
+    @@interval = Rails.env.production? ? 5 : 0.25
     every @@interval.minute
 
     def debug(msg)
-      puts "🔴EMDS: #{msg}"
-      Rails.logger.warn("MDS: #{msg}") if SiteSetting.mail_daily_summary_debug_mode
+      return until SiteSetting.mail_daily_summary_debug_mode
+      puts "🔴eMDS: #{msg}"
+      Rails.logger.warn("eMDS: #{msg}")
     end
 
     def today_at(time)
@@ -27,11 +28,29 @@ module Jobs
         end
 
       current_time = Time.now
+      time_to_look_back = SiteSetting.mail_daily_summary_frequency == "weekly" ? 7.days : 1.day
 
       if scheduled_time.length > 0
-        scheduled_time = today_at(scheduled_time)
+        if scheduled_time.length == 0
+          scheduled_time = today_at("00:00")
+        else
+          scheduled_time = today_at(scheduled_time)
+        end
+
+        if SiteSetting.mail_daily_summary_frequency == "weekly"
+          (0..6).each do
+            if scheduled_time.wday != SiteSetting.mail_daily_summary_day_of_week
+              scheduled_time += 1.day
+            end
+          end
+        end
 
         debug "last_run_at: #{last_run_at}, current_time: #{current_time}, scheduled_at: #{scheduled_time}"
+
+        if current_time < scheduled_time
+          debug("waiting for scheduled time")
+          return
+        end
 
         if last_run_at
           last_day_run = last_run_at.change(hour: 0, min: 0, sec: 0, usec: 0)
@@ -41,24 +60,28 @@ module Jobs
             debug("allready run today")
             return
           end
-          if current_time < scheduled_time
-            debug("waiting for scheduled time")
-            return
-          end
-
-          since = [last_run_at, scheduled_time - 1000.day].max
+          max_ago = Rails.env.production? ? 31.day : 1000.day
+          since = [last_run_at, scheduled_time - max_ago].max
         else
-          return if current_time < scheduled_time
-          since = scheduled_time - 1.day
+          since = scheduled_time - time_to_look_back
         end
 
         compare_user_first_seen_hour = false
       else
-        compare_user_first_seen_hour = true
-        return if last_run_at && last_run_at.hour == current_time.hour
+        if SiteSetting.mail_daily_summary_frequency == "weekly"
+          if current_time.wday != SiteSetting.mail_daily_summary_day_of_week
+            debug("waiting for the right day of week")
+            return
+          end
+        end
 
-        c = current_time
-        since = Time.new.change min: 0, sec: 0, usec: 0
+        compare_user_first_seen_hour = true
+        if last_run_at && last_run_at.hour == current_time.hour
+          debug("allready run this hour")
+          return
+        end
+
+        since = current_time.change(min: 0, sec: 0, usec: 0) - time_to_look_back
       end
 
       SiteSetting.mail_daily_summary_last_run_at = current_time.to_s

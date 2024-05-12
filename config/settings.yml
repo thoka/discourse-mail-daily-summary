@@ -29,3 +29,16 @@ plugins:
      allow_any: false
      refresh: true
   
+  mail_daily_summary_frequency: 
+    default: "daily"
+    type: enum
+    choices:
+      - "daily"
+      - "weekly"
+    client: true
+  mail_daily_summary_day_of_week:
+    default: 0
+    type: enum
+    choices: [0, 1, 2, 3, 4, 5, 6]
+    client: true  
+
