@@ -13,7 +13,7 @@ Fork of [discourse-mlm-summary](https://github.com/procourse/discourse-mlm-daily
 
 ## Changelog
 
-- add weekly summaries (0.13)
+- add weekly summaries (0.12)
 
 ## ToDo / Wishes
 
