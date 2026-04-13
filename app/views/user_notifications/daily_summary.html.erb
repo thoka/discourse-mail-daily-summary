@@ -45,8 +45,8 @@
                   </tr>
                 </tbody>
               </table>
-              
-              <% if false %> 
+
+              <% if false %>
                 <center class="header-popular-topics with-accent-colors" style="font-size:22px;font-weight:400;margin-bottom: 8px; mso-line-height-rule:exactly;line-height:36px;"><%=t 'user_notifications.digest.popular_topics' %></center>
               <% end %>
 
@@ -105,7 +105,7 @@
                             </tr>
                           </tbody>
                         </table>
-                        <% t.posts.each do |post| %>
+                        <% daily_summary_posts(t).each do |post| %>
                           <table class="digest-topic-title-wrapper with-dir" style="padding:0;position:relative;vertical-align:top;width:100%;padding-top:10px;">
                             <tbody>
                               <tr>
@@ -132,7 +132,7 @@
                             <tbody>
                               <tr>
                                 <td class="post-excerpt" style="color:#0a0a0a;font-size:14px;padding:0 16px 0 16px;width:100%;font-weight:normal;mso-padding-alt: 16px;">
-                                  <%= raw format_for_email(post, false) %>
+                                  <%= raw daily_summary_post_excerpt(post) %>
                                 </td>
                               </tr>
                             </tbody>
@@ -152,7 +152,7 @@
                               <td class="digest-read-more-wrap" style="line-height:1.3;padding:<%= rtl? ? '0 8px 0 16px' : '0 16px 0 8px' %>;text-align:<%= rtl? ? 'left' : 'right' %>;white-space:nowrap;vertical-align:top;">
                                 <span class="with_accent-colors mso-accent-link">
                                   <a href="<%= Discourse.base_url_no_prefix + t.relative_url %>" class="digest-button with-accent-colors" style="width:100%;text-decoration:none;padding:8px 16px;white-space:nowrap;">
-                                    <%=t 'user_notifications.daily_summary.view_this_topic' %>
+                                    <%= t(daily_summary_topic_cut_off?(t) ? 'user_notifications.daily_summary.continue_reading' : 'user_notifications.daily_summary.view_this_topic') %>
                                   </a>
                                 </span>
                               </td>
@@ -243,7 +243,7 @@
           </tr>
         </table>
         <% end %>
-        
+
         <%# summary_custom_html("below_footer") %>
 
       </td>

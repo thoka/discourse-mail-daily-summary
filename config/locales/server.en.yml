@@ -10,22 +10,24 @@ en:
     mail_daily_summary_auto_enabled_groups: 'This groups will get summaries, independent of individual settings'
     mail_daily_summary_frequency: "Frequency of summary emails"
     mail_daily_summary_day_of_week: "Day of the week to send the summary (0 = Sunday)"
-
+    mail_daily_summary_max_posts_per_topic: "Maximum number of posts shown per topic in daily summary emails (0 = no maximum)"
+    mail_daily_summary_min_excerpt_length: "Excerpt cutoff length for each shown post in daily summary emails (0 = no maximum)"
   user_notifications:
     daily_summary:
-      why: "Activity on %{site_link} since %{date}"   
-      subject_template: "[%{email_prefix}] Daily update for %{date}"   
-      unsubscribe: "This summary is sent daily due to mail daily summary being enabled in your preferences. To unsubscribe %{unsubscribe_link} or change %{email_preferences_link}."   
-      from: "%{site_name} summary"    
-      new_topics: "New topics"    
-      topic_updates: "Topic updates"    
-      view_this_topic: "View this topic"    
+      why: "Activity on %{site_link} since %{date}"
+      subject_template: "[%{email_prefix}] Daily update for %{date}"
+      unsubscribe: "This summary is sent daily due to mail daily summary being enabled in your preferences. To unsubscribe %{unsubscribe_link} or change %{email_preferences_link}."
+      from: "%{site_name} summary"
+      new_topics: "New topics"
+      topic_updates: "Topic updates"
+      view_this_topic: "View this topic"
+      continue_reading: "Continue reading"
       back_to_top: "Back to top"
       your_email_settings: "your email settings"
       click_here: "click here"
 
   unsubscribe:
-    unsubscribe_daily_summaries: "Unsubscribe from daily summaries"  
+    unsubscribe_daily_summaries: "Unsubscribe from daily summaries"
     daily_summary:
       enabled_groups: "Membership in these groups automatically subscribes you to the daily summary:"
       leave_groups: "Please leave these groups to turn off the daily summary."
