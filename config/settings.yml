@@ -28,7 +28,6 @@ plugins:
      default: ""
      allow_any: false
      refresh: true
-
   mail_daily_summary_frequency:
     default: "daily"
     type: enum
@@ -49,3 +48,5 @@ plugins:
     default: 0
     type: integer
     min: 0
+  mail_daily_summary_preview_uses_daily_summary:
+    default: false

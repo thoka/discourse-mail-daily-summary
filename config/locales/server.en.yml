@@ -12,6 +12,7 @@ en:
     mail_daily_summary_day_of_week: "Day of the week to send the summary (0 = Sunday)"
     mail_daily_summary_max_posts_per_topic: "Maximum number of posts shown per topic in daily summary emails (0 = no maximum)"
     mail_daily_summary_min_excerpt_length: "Excerpt cutoff length for each shown post in daily summary emails (0 = no maximum)"
+    mail_daily_summary_preview_uses_daily_summary: "Use daily summary instead of digest in the admin preview digest endpoint"
   user_notifications:
     daily_summary:
       why: "Activity on %{site_link} since %{date}"

@@ -11,6 +11,7 @@ de:
     mail_daily_summary_enable_as_default: 'Versand als Voreinstellung für alle Nutzer aktivieren'
     mail_daily_summary_max_posts_per_topic: 'Maximale Anzahl der pro Thema angezeigten Beiträge in der täglichen Zusammenfassung (0 = kein Maximum)'
     mail_daily_summary_min_excerpt_length: 'Auszugslänge für den Abschneidepunkt je angezeigtem Beitrag in der täglichen Zusammenfassung (0 = kein Maximum)'
+    mail_daily_summary_preview_uses_daily_summary: 'In der Admin-Vorschau die tägliche Zusammenfassung statt des Digest verwenden'
   user_notifications:
     daily_summary:
       why: "Aktivitäten im %{site_link} seit dem %{date}"

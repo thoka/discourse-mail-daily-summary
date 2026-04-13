@@ -20,6 +20,7 @@ after_initialize do
   require_relative "app/jobs/scheduled/enqueue_mail_daily_summary"
   require_relative "app/helpers/mail_daily_summary_helper"
   require_relative "lib/discourse_mail_daily_summary/email_controller_helper"
+  require_relative "lib/discourse_mail_daily_summary/admin_email_controller_extension"
 
   # TODO change name? this name is historical
   User.register_custom_field_type("user_mlm_daily_summary_enabled", :boolean)
@@ -28,6 +29,7 @@ after_initialize do
   reloadable_patch do |plugin|
     UserNotifications.prepend MailDailySummary::UserNotificationsExtension
     UserNotifications.helper MailDailySummaryHelper
+    Admin::EmailController.prepend MailDailySummary::AdminEmailControllerExtension
   end
 
   register_email_unsubscriber(
