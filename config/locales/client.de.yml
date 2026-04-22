@@ -1,6 +1,12 @@
 de:
   js:
     mail_daily_summary:
-      daily: "Sende mir eine tägliche Zusammenstellungen"
-      preference_label: "Aktiviere tägliche Zusammenstellungen"
-      instructions: "Wenn du dies aktivierst, bekommst du eine tägliche Zusammenstellung der Aktivitäten dieses Forums"
+      daily: "Aktivitaets-Update"
+      preference_label: "Aktiviere E-Mails fuer Aktivitaets-Updates"
+      instructions: "Du erhaeltst ein regelmaessiges Aktivitaets-Update mit allen aktuellen Forenaktivitaeten."
+      frequency_label: "Haeufigkeit"
+      frequency_default: "Standardeinstellung der Website"
+      frequency_daily: "Täglich"
+      frequency_weekly: "Wöchentlich"
+      frequency_instructions: "Waehle aus, wie oft du E-Mails mit Aktivitaets-Updates erhalten moechtest."
+

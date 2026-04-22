@@ -48,11 +48,15 @@ module MailDailySummary
       @unsubscribe_key = UnsubscribeKey.create_key_for(user, MailDailySummary::UNSUBSCRIBE)
 
       build_summary_for(user)
+
+      # Determine frequency for subject line
+      frequency = opts[:frequency] || "daily"
+
       opts = {
         from_alias: I18n.t("user_notifications.daily_summary.from", site_name: SiteSetting.title),
         subject:
           I18n.t(
-            "user_notifications.daily_summary.subject_template",
+            "user_notifications.daily_summary.subject_template_#{frequency}",
             email_prefix: @email_prefix,
             date: @date,
           ),

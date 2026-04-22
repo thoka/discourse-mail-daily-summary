@@ -1,7 +1,11 @@
 en:
   js:
     mail_daily_summary:
-      daily: "Send daily email summaries"
-      preference_label: "Enable daily summaries"
-      instructions: "You will receive a daily summary of the day's activity."
-      
+      daily: "Activity Update"
+      preference_label: "Enable Activity Update emails"
+      instructions: "You will receive a periodical Activity Update with all recent forum activity."
+      frequency_label: "Frequency"
+      frequency_default: "Site Default"
+      frequency_daily: "Daily"
+      frequency_weekly: "Weekly"
+      frequency_instructions: "Choose how often you would like to receive Activity Update emails."

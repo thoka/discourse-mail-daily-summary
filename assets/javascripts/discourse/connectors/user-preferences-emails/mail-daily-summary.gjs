@@ -1,6 +1,8 @@
 import Component from "@ember/component";
 import { classNames } from "@ember-decorators/component";
+import { fn } from "@ember/helper";
 import PreferenceCheckbox from "discourse/components/preference-checkbox";
+import ComboBox from "discourse/select-kit/components/combo-box";
 import { i18n } from "discourse-i18n";
 
 @classNames("user-preferences-emails-outlet", "mail-daily-summary")
@@ -34,6 +36,34 @@ export default class MailDailySummaryConnector extends Component {
     return normalizedValue;
   }
 
+  get userMailSummaryFrequency() {
+    return (
+      this.model?.custom_fields?.user_mail_summary_frequency || "default"
+    );
+  }
+
+  set userMailSummaryFrequency(value) {
+    this.model.set("custom_fields.user_mail_summary_frequency", value);
+    return value;
+  }
+
+  get frequencyOptions() {
+    return [
+      {
+        name: i18n("mail_daily_summary.frequency_default"),
+        value: "default",
+      },
+      {
+        name: i18n("mail_daily_summary.frequency_daily"),
+        value: "daily",
+      },
+      {
+        name: i18n("mail_daily_summary.frequency_weekly"),
+        value: "weekly",
+      },
+    ];
+  }
+
   <template>
     {{#if this.siteSettings.mail_daily_summary_enabled}}
       <div class="control-group">
@@ -45,6 +75,21 @@ export default class MailDailySummaryConnector extends Component {
         <div class="instructions">{{{i18n
             "mail_daily_summary.instructions"
           }}}</div>
+
+        {{#if this.userMLMDailySummaryEnabled}}
+          <div class="control-group mail-daily-summary-frequency">
+            <ComboBox
+              @content={{this.frequencyOptions}}
+              @value={{this.userMailSummaryFrequency}}
+              @nameProperty="name"
+              @valueProperty="value"
+              @onChange={{fn (mut this.userMailSummaryFrequency)}}
+            />
+            <div class="instructions">{{{i18n
+                "mail_daily_summary.frequency_instructions"
+              }}}</div>
+          </div>
+        {{/if}}
       </div>
     {{/if}}
   </template>
