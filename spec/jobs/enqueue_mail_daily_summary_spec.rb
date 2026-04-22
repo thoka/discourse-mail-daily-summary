@@ -12,6 +12,10 @@ describe Jobs::EnqueueMailDailySummary do
 
   before do
     without_partial_double_verification do
+      allow(SiteSetting).to receive(:mail_daily_summary_enabled).and_return(true)
+      allow(SiteSetting).to receive(:mail_daily_summary_at).and_return("")
+      allow(SiteSetting).to receive(:mail_daily_summary_day_of_week).and_return(0)
+      allow(SiteSetting).to receive(:mail_daily_summary_debug_mode).and_return(false)
       allow(SiteSetting).to receive(:mail_daily_summary_enable_as_default).and_return(true)
       allow(SiteSetting).to receive(:mail_daily_summary_frequency).and_return("daily")
       allow(SiteSetting).to receive(:must_approve_users?).and_return(false)
@@ -89,5 +93,61 @@ describe Jobs::EnqueueMailDailySummary do
 
     weekly_ids = job.target_weekly_users
     expect(weekly_ids).not_to include(default_user.id)
+  end
+
+  it "does not enqueue before configured send time" do
+    without_partial_double_verification do
+      allow(SiteSetting).to receive(:mail_daily_summary_at).and_return("14:00")
+    end
+
+    allow(Time.zone).to receive(:now).and_return(Time.zone.parse("2026-04-22 13:30:00"))
+
+    expect(job).not_to receive(:target_daily_users)
+    expect(job).not_to receive(:target_weekly_users)
+    expect(Jobs).not_to receive(:enqueue)
+
+    job.execute({})
+  end
+
+  it "enqueues daily only after configured time when weekday does not match weekly day" do
+    without_partial_double_verification do
+      allow(SiteSetting).to receive(:mail_daily_summary_at).and_return("14:00")
+      allow(SiteSetting).to receive(:mail_daily_summary_day_of_week).and_return(0)
+    end
+
+    allow(Time.zone).to receive(:now).and_return(Time.zone.parse("2026-04-22 14:30:00")) # Wednesday
+    allow(job).to receive(:target_daily_users).and_return([default_user.id])
+    expect(job).not_to receive(:target_weekly_users)
+    allow(Jobs).to receive(:enqueue)
+
+    job.execute({})
+
+    expect(Jobs).to have_received(:enqueue).with(
+      :user_daily_summary_email,
+      { type: "daily_summary", user_id: default_user.id, frequency: "daily" },
+    ).once
+  end
+
+  it "enqueues daily and weekly after configured time when weekday matches" do
+    without_partial_double_verification do
+      allow(SiteSetting).to receive(:mail_daily_summary_at).and_return("14:00")
+      allow(SiteSetting).to receive(:mail_daily_summary_day_of_week).and_return(3)
+    end
+
+    allow(Time.zone).to receive(:now).and_return(Time.zone.parse("2026-04-22 14:30:00")) # Wednesday
+    allow(job).to receive(:target_daily_users).and_return([default_user.id])
+    allow(job).to receive(:target_weekly_users).and_return([explicit_weekly_user.id])
+    allow(Jobs).to receive(:enqueue)
+
+    job.execute({})
+
+    expect(Jobs).to have_received(:enqueue).with(
+      :user_daily_summary_email,
+      { type: "daily_summary", user_id: default_user.id, frequency: "daily" },
+    ).once
+    expect(Jobs).to have_received(:enqueue).with(
+      :user_daily_summary_email,
+      { type: "daily_summary", user_id: explicit_weekly_user.id, frequency: "weekly" },
+    ).once
   end
 end

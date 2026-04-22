@@ -10,13 +10,27 @@ module Jobs
       Rails.logger.warn("eMDS: #{msg}")
     end
 
-    def today_at(time)
+    def today_at(time, current_time = Time.zone.now)
       hour, minute = time.split(":").map(&:to_i)
-      Time.new.change(hour: hour, min: minute, usec: 0)
+      current_time.change(hour: hour, min: minute, sec: 0, usec: 0)
+    end
+
+    def scheduled_time_reached?(current_time)
+      scheduled_time = SiteSetting.mail_daily_summary_at
+      return true if scheduled_time.blank?
+
+      current_time >= today_at(scheduled_time, current_time)
     end
 
     def execute(args)
       return unless SiteSetting.mail_daily_summary_enabled
+
+      current_time = Time.zone.now
+
+      unless scheduled_time_reached?(current_time)
+        debug("waiting for scheduled time")
+        return
+      end
 
       debug("Starting enqueue cycle")
 
@@ -29,13 +43,15 @@ module Jobs
       end
 
       # Process weekly users (only on the correct day)
-      if Time.now.wday == SiteSetting.mail_daily_summary_day_of_week
+      if current_time.wday == SiteSetting.mail_daily_summary_day_of_week
         weekly_users = target_weekly_users
         debug("Weekly users to process: #{weekly_users.count}")
         weekly_users.each do |user_id|
           opts = { type: "daily_summary", user_id: user_id, frequency: "weekly" }
           Jobs.enqueue(:user_daily_summary_email, opts)
         end
+      else
+        debug("waiting for the right day of week")
       end
     end
 
