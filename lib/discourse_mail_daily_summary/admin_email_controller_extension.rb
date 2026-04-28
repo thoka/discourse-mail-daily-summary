@@ -20,5 +20,36 @@ module MailDailySummary
         render json: { errors: ["No content available for preview"] }, status: :unprocessable_entity
       end
     end
+
+    def send_digest
+      return super unless SiteSetting.mail_daily_summary_preview_uses_daily_summary
+
+      params.require(:last_seen_at)
+      params.require(:username)
+      params.require(:email)
+      user = User.find_by_username(params[:username])
+      raise Discourse::InvalidParameters unless user
+
+      message, skip_reason =
+        UserNotifications.public_send(
+          :daily_summary,
+          user,
+          since: params[:last_seen_at],
+          skip_unsubscribe_links: true,
+        )
+
+      if message
+        message.to = params[:email]
+
+        begin
+          Email::Sender.new(message, :daily_summary).send
+          render json: success_json
+        rescue => e
+          render json: { errors: [e.message] }, status: :unprocessable_entity
+        end
+      else
+        render json: { errors: skip_reason }
+      end
+    end
   end
 end
