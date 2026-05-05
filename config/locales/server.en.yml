@@ -12,6 +12,7 @@ en:
     mail_daily_summary_day_of_week: "Day of the week to send the activity update email (0 = Sunday)"
     mail_daily_summary_max_posts_per_topic: "Maximum number of posts shown per topic in periodical activity update emails (0 = no maximum)"
     mail_daily_summary_min_excerpt_length: "Excerpt cutoff length for each shown post in periodical activity update emails (0 = no maximum)"
+    mail_daily_summary_max_excerpt_length: "Maximum excerpt length for each shown post in periodical activity update emails when fallback text truncation is used (0 = no maximum)"
     mail_daily_summary_preview_uses_daily_summary: "Use periodical activity update instead of digest in the admin preview digest endpoint"
   user_notifications:
     daily_summary:

@@ -1,6 +1,6 @@
 # name: discourse-mail-daily-summary
 # about: Send a daily summary email.
-# version: 0.15.2
+# version: 0.15.3
 # authors: Thomas Kalka and Communiteq
 # url: https://www.github.com/thoka/discourse-mail-daily-summary
 # meta_topic_id: 306214

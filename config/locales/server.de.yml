@@ -13,6 +13,7 @@ de:
     mail_daily_summary_day_of_week: 'Wochentag, an dem die E-Mail mit Aktivitaets-Update gesendet wird (0 = Sonntag)'
     mail_daily_summary_max_posts_per_topic: 'Maximale Anzahl der pro Thema angezeigten Beitraege in periodischen E-Mails mit Aktivitaets-Updates (0 = kein Maximum)'
     mail_daily_summary_min_excerpt_length: 'Auszugslaenge fuer den Abschneidepunkt je angezeigtem Beitrag in periodischen E-Mails mit Aktivitaets-Updates (0 = kein Maximum)'
+    mail_daily_summary_max_excerpt_length: 'Maximale Auszugslaenge je angezeigtem Beitrag in periodischen E-Mails mit Aktivitaets-Updates, wenn Text-basierte Ersetzung verwendet wird (0 = kein Maximum)'
     mail_daily_summary_preview_uses_daily_summary: 'In der Admin-Vorschau periodisches Aktivitaets-Update statt Digest verwenden'
   user_notifications:
     daily_summary:

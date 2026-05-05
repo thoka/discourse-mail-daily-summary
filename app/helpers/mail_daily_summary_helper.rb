@@ -34,10 +34,16 @@ module MailDailySummaryHelper
     @daily_summary_excerpt_data[post.id] ||=
       begin
         minimum_length = SiteSetting.mail_daily_summary_min_excerpt_length.to_i
+        maximum_length = SiteSetting.mail_daily_summary_max_excerpt_length.to_i
         source_html = post.cooked.to_s
 
         if minimum_length <= 0
-          { html: source_html, truncated: false }
+          if maximum_length > 0
+            excerpt_html = daily_summary_plain_text_excerpt_from(source_html, maximum_length)
+            { html: excerpt_html, truncated: excerpt_html != source_html }
+          else
+            { html: source_html, truncated: false }
+          end
         else
           selected_html =
             daily_summary_first_paragraphs_from(
@@ -46,6 +52,10 @@ module MailDailySummaryHelper
             ).to_s
 
           excerpt_html = selected_html.presence || source_html
+
+          if maximum_length > 0 && daily_summary_text_length_for(excerpt_html) > maximum_length
+            excerpt_html = daily_summary_plain_text_excerpt_from(source_html, maximum_length)
+          end
 
           { html: excerpt_html, truncated: excerpt_html != source_html }
         end
@@ -71,5 +81,34 @@ module MailDailySummaryHelper
     return result if result.present?
 
     doc.css("body > p:not(:empty), body > div:not(:empty), body > p > div.lightbox-wrapper img").first
+  end
+
+  def daily_summary_plain_text_excerpt_from(html, maximum_length)
+    text = daily_summary_plain_text_from(html)
+
+    return text if maximum_length <= 0 || text.length < maximum_length
+    return "" if maximum_length <= 1
+    return "..."[0, maximum_length - 1] if maximum_length <= 4
+
+    cutoff = text[0, maximum_length - 4]
+    boundary = cutoff.rindex(/\s/)
+
+    base_excerpt =
+      if boundary && boundary.positive?
+        cutoff[0...boundary].rstrip
+      else
+        cutoff.rstrip
+      end
+
+    base_excerpt = cutoff.rstrip if base_excerpt.blank?
+    "#{base_excerpt}..."
+  end
+
+  def daily_summary_text_length_for(html)
+    daily_summary_plain_text_from(html).length
+  end
+
+  def daily_summary_plain_text_from(html)
+    Nokogiri.HTML5(html.to_s).text.gsub(/\s+/, " ").strip
   end
 end
