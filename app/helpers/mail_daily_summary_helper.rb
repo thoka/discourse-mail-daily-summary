@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module MailDailySummaryHelper
+  ELLIPSIS = "…"
+
   def daily_summary_topic(topic, count)
     render(partial: "daily_summary_topic", locals: { topic: topic })
   end
@@ -88,9 +90,9 @@ module MailDailySummaryHelper
 
     return text if maximum_length <= 0 || text.length < maximum_length
     return "" if maximum_length <= 1
-    return "..."[0, maximum_length - 1] if maximum_length <= 4
+    return ELLIPSIS if maximum_length == 2
 
-    cutoff = text[0, maximum_length - 4]
+    cutoff = text[0, maximum_length - 2]
     boundary = cutoff.rindex(/\s/)
 
     base_excerpt =
@@ -101,7 +103,7 @@ module MailDailySummaryHelper
       end
 
     base_excerpt = cutoff.rstrip if base_excerpt.blank?
-    "#{base_excerpt}..."
+    "#{base_excerpt}#{ELLIPSIS}"
   end
 
   def daily_summary_text_length_for(html)

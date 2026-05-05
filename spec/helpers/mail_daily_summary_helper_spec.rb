@@ -36,7 +36,7 @@ describe MailDailySummaryHelper do
       data = helper_instance.send(:daily_summary_excerpt_data, list_post)
 
       expect(data[:truncated]).to eq(true)
-      expect(data[:html]).to end_with("...")
+      expect(data[:html]).to end_with("…")
       expect(data[:html]).not_to include("<ul")
       expect(data[:html].length).to be < maximum_length
     end
@@ -48,8 +48,8 @@ describe MailDailySummaryHelper do
 
       data = helper_instance.send(:daily_summary_excerpt_data, word_boundary_post)
 
-      expect(data[:html]).to eq("one two...")
-      expect(data[:html]).to end_with("...")
+      expect(data[:html]).to eq("one two…")
+      expect(data[:html]).to end_with("…")
       expect(data[:html].length).to be < 15
     end
 
@@ -62,7 +62,7 @@ describe MailDailySummaryHelper do
       data = helper_instance.send(:daily_summary_excerpt_data, list_post)
 
       expect(data[:truncated]).to eq(true)
-      expect(data[:html]).to end_with("...")
+      expect(data[:html]).to end_with("…")
       expect(data[:html]).not_to include("<ul")
       expect(data[:html].length).to be < 40
     end
