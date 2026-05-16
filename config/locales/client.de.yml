@@ -1,12 +1,12 @@
 de:
   js:
     mail_daily_summary:
-      daily: "Aktivitaets-Update"
-      preference_label: "Aktiviere E-Mails fuer Aktivitaets-Updates"
-      instructions: "Du erhaeltst ein regelmaessiges Aktivitaets-Update mit allen aktuellen Forenaktivitaeten."
-      frequency_label: "Haeufigkeit"
+      daily: "Aktivitäts-Update"
+      preference_label: "Aktiviere E-Mails für Aktivitäts-Updates"
+      instructions: "Du erhältst ein regelmäßiges Aktivitäts-Update mit allen aktuellen Forenaktivitäten."
+      frequency_label: "Häufigkeit"
       frequency_default: "Standardeinstellung der Website"
       frequency_daily: "Täglich"
       frequency_weekly: "Wöchentlich"
-      frequency_instructions: "Waehle aus, wie oft du E-Mails mit Aktivitaets-Updates erhalten moechtest."
+      frequency_instructions: "Wähle aus, wie oft du E-Mails mit Aktivitäts-Updates erhalten möchtest."
 
