@@ -1,25 +1,29 @@
 de:
   site_settings:
-    mail_daily_summary_enabled: 'Erlaube Benutzern eine tägliche Zusammenstellung (Update) zu empfangen.'
-    mail_daily_summary_at: 'Wann soll der Zusammenstellung versendet werden? (HH:MM)'
+    mail_daily_summary_enabled: 'Erlaube Benutzern, regelmäßige E-Mails mit Aktivitäts-Updates zu erhalten.'
+    mail_daily_summary_at: 'Wann soll die E-Mail mit Aktivitäts-Update erstellt werden? (HH:MM)'
     mail_daily_summary_last_run_at: 'Zeitstempel des letzten Versands'
     mail_daily_summary_debug_mode: 'Debug Log aktivieren'
     mail_daily_summary_add_unsubscribe_link: 'Füge einen Link zum Abbestellen hinzu'
-    mail_daily_summary_auto_enabled_groups: 'Gruppen, die die tägliche Zusammenstellung unabhängig von eigenen Einstellungen erhalten sollen'
-    mail_daily_summary_enabled_categories: 'Falls gesetzt, werden nur Themen in diesen Kategorien (inklusive Unterkategorien), berücksichtigt'
+    mail_daily_summary_auto_enabled_groups: 'Diese Gruppen erhalten E-Mails mit Aktivitäts-Updates unabhängig von individuellen Einstellungen'
+    mail_daily_summary_enabled_categories: 'Falls gesetzt, werden nur Themen in diesen Kategorien (inklusive Unterkategorien) in E-Mails mit Aktivitäts-Updates aufgenommen'
     mail_daily_summary_disabled_groups: 'Gruppen, die die tägliche Zusammenfassung nicht erhalten sollen (überschreibt die Einstellung oben)'
     mail_daily_summary_enable_as_default: 'Versand als Voreinstellung für alle Nutzer aktivieren'
-    mail_daily_summary_max_posts_per_topic: 'Maximale Anzahl der pro Thema angezeigten Beiträge in der täglichen Zusammenfassung (0 = kein Maximum)'
-    mail_daily_summary_min_excerpt_length: 'Auszugslänge für den Abschneidepunkt je angezeigtem Beitrag in der täglichen Zusammenfassung (0 = kein Maximum)'
-    mail_daily_summary_preview_uses_daily_summary: 'In der Admin-Vorschau die tägliche Zusammenfassung statt des Digest verwenden'
+    mail_daily_summary_frequency: 'Standardhäufigkeit für E-Mails mit Aktivitäts-Updates'
+    mail_daily_summary_day_of_week: 'Wochentag, an dem die E-Mail mit Aktivitäts-Update gesendet wird (0 = Sonntag)'
+    mail_daily_summary_max_posts_per_topic: 'Maximale Anzahl der pro Thema angezeigten Beiträge in periodischen E-Mails mit Aktivitäts-Updates (0 = kein Maximum)'
+    mail_daily_summary_min_excerpt_length: 'Auszugslänge für den Abschneidepunkt je angezeigtem Beitrag in periodischen E-Mails mit Aktivitäts-Updates (0 = kein Maximum)'
+    mail_daily_summary_max_excerpt_length: 'Maximale Auszugslänge je angezeigtem Beitrag in periodischen E-Mails mit Aktivitäts-Updates, wenn Text-basierte Ersetzung verwendet wird (0 = kein Maximum)'
+    mail_daily_summary_preview_uses_daily_summary: 'In der Admin-Vorschau periodisches Aktivitäts-Update statt Digest verwenden'
   user_notifications:
     daily_summary:
       why: "Aktivitäten im %{site_link} seit dem %{date}"
-      subject_template: "[%{email_prefix}] Update vom %{date}"
-      unsubscribe: "Zum deaktivieren dieser täglichen Übersicht %{unsubscribe_link} oder ändere %{email_preferences_link}."
+      subject_template_daily: "[%{email_prefix}] Tägliches Aktivitäts-Update für %{date}"
+      subject_template_weekly: "[%{email_prefix}] Wöchentliches Aktivitäts-Update für %{date}"
+      unsubscribe: "Diese E-Mail mit Aktivitäts-Update wird täglich gesendet, weil Aktivitäts-Updates in deinen Einstellungen aktiviert sind. Zum Abbestellen %{unsubscribe_link} oder ändere %{email_preferences_link}."
       your_email_settings: "Deine Email-Einstellungen"
       click_here: "klicke hier"
-      from: "%{site_name} Zusammenfassung"
+      from: "%{site_name} Aktivitäts-Update"
       new_topics: "Neue Themen"
       topic_updates: "Neuigkeiten in bestehenden Themen"
       view_this_topic: "Dieses Thema im Forum anschauen"
@@ -27,7 +31,7 @@ de:
       back_to_top: "Zurück zum Anfang"
 
   unsubscribe:
-    unsubscribe_daily_summaries: "Tägliche Zuammenstellung neuer Beiträge abbestellen"
+    unsubscribe_daily_summaries: "E-Mails mit Aktivitäts-Updates abbestellen"
     daily_summary:
-      enabled_groups: "Die Mitgliedschaft in diesen Gruppen abboniert automatisch die tägliche Zusammenfassung:"
-      leave_groups: "Bitte verlasse diese Gruppen, um die tägliche Zusammenfassung abzustellen."
+      enabled_groups: "Die Mitgliedschaft in diesen Gruppen abonniert dich automatisch für E-Mails mit Aktivitäts-Updates:"
+      leave_groups: "Bitte verlasse diese Gruppen, um E-Mails mit Aktivitäts-Updates zu deaktivieren."

@@ -2,6 +2,32 @@
 
 module Jobs
   class UserDailySummaryEmail < ::Jobs::UserEmail
+    def execute(args)
+      frequency = args[:frequency] || "daily"
+      user_id = args[:user_id]
+
+      # Calculate the "since" window based on frequency
+      since = case frequency
+              when "weekly"
+                7.days.ago
+              else # "daily"
+                1.day.ago
+              end
+
+      # Update the args with the calculated since value
+      args[:since] = since.to_s
+
+      # Call parent's execute which handles the email sending
+      super(args)
+
+      # After successful send, update the user's last_sent_at timestamp
+      user = User.find_by(id: user_id)
+      if user
+        user.custom_fields["user_mail_summary_last_sent_at"] = Time.now.to_s
+        user.save_custom_fields(true)
+      end
+    end
+
     def message_for_email(user, post, type, notification, args = nil)
       args ||= {}
 
@@ -37,6 +63,7 @@ module Jobs
       end
 
       email_args[:since] = args[:since]
+      email_args[:frequency] = args[:frequency] if args[:frequency].present?
 
       message =
         EmailLog.unique_email_per_post(post, user) do

@@ -1,7 +1,7 @@
 # name: discourse-mail-daily-summary
 # about: Send a daily summary email.
-# version: 0.14
-# authors: Thomas Kalka
+# version: 0.15.3
+# authors: Thomas Kalka and Communiteq
 # url: https://www.github.com/thoka/discourse-mail-daily-summary
 # meta_topic_id: 306214
 
@@ -11,6 +11,7 @@
 enabled_site_setting :mail_daily_summary_enabled
 
 DiscoursePluginRegistry.serialized_current_user_fields << "user_mlm_daily_summary_enabled"
+DiscoursePluginRegistry.serialized_current_user_fields << "user_mail_summary_frequency"
 
 require_relative "lib/discourse_mail_daily_summary/engine"
 
@@ -25,6 +26,13 @@ after_initialize do
   # TODO change name? this name is historical
   User.register_custom_field_type("user_mlm_daily_summary_enabled", :boolean)
   register_editable_user_custom_field :user_mlm_daily_summary_enabled
+
+  # New frequency override field
+  User.register_custom_field_type("user_mail_summary_frequency", :string)
+  register_editable_user_custom_field :user_mail_summary_frequency
+
+  # Per-user send tracking
+  User.register_custom_field_type("user_mail_summary_last_sent_at", :datetime)
 
   reloadable_patch do |plugin|
     UserNotifications.prepend MailDailySummary::UserNotificationsExtension
